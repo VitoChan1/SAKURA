@@ -1,3 +1,7 @@
+"""
+Generic framework of SAKURA
+"""
+
 import argparse
 import json
 import os
@@ -38,17 +42,18 @@ def parse_args():
 
 
 class sakuraAE(object):
+    """
+    SAKURA model
+
+    Args:
+        config_json_path (str): path to config json file
+        verbose (bool): verbose console outputs
+        suppress_train (bool): suppress model training, only setup dataset and model
+        suppress_tensorboardX (bool): suppress Logger to initiate tensorboardX (to prevent flushing logs)
+    """
     def __init__(self, config_json_path, verbose=False,
                  suppress_train=False, suppress_tensorboardX=False):
-        """
-        Initialize SAKURA model.
-
-        Args:
-            config_json_path (str): path to config json file
-            verbose (bool): verbose console outputs
-            suppress_train (bool): suppress model training, only setup dataset and model
-            suppress_tensorboardX (bool): suppress Logger to initiate tensorboardX (to prevent flushing logs)
-        """
+                     
         # Read configurations for arguments
         with open(config_json_path, 'r') as f:
             self.config = json.load(f)
