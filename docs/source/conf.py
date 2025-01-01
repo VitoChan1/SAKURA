@@ -1,10 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
-
+import sakura
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'SAKURA'
+copyright = '2023, Yip Lab'
+author = 'Zhenghao ZHANG, Jiamin CHEN, Haoran WU'
 
 release = '0.1'
 version = '0.1.0'
