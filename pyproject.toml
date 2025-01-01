@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "sakura"
 authors = [
-    {name="Zhenghao ZHANG", email="<adamzhang@me.com>"},
-    {name="Jiamin CHEN", email="<vitochanjm@gmail.com>"},
-    {name="Haoran WU", email="<haoran@link.cuhk.edu.hk>"},]
+    {name="Zhenghao ZHANG", email="adamzhang@me.com"},
+    {name="Jiamin CHEN", email="vitochanjm@gmail.com"},
+    {name="Haoran WU", email="haoran@link.cuhk.edu.hk"},]
 dynamic = ["version", "description"]
