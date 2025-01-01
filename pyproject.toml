@@ -13,7 +13,6 @@ authors = [
     {name="Jiamin CHEN", email="<vitochanjm@gmail.com>"},
     {name="Haoran WU", email="<haoran@link.cuhk.edu.hk>"},]
 readme = "README.md"
-license = "MIT"
 repository = "https://github.com/hahaschool/SAKURA.git"
 keywords = ["bioinformatics", "deep-learning", "single-cell", "dimensionality-reduction"]
 classifiers = [
