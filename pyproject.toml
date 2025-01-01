@@ -9,9 +9,9 @@ name = "sakura"
 version = "0.1.0"
 description = "Single-cell data Analysis with Knowledge inputs from User using Regularized Autoencoders for knowledge-guided dimensionality reduction"
 authors = [
-    {name="Zhenghao ZHANG", email="<adamzhang@me.com>"},
-    {name="Jiamin CHEN", email="<vitochanjm@gmail.com>"},
-    {name="Haoran WU", email="<haoran@link.cuhk.edu.hk>"},]
+    "Zhenghao ZHANG <adamzhang@me.com>",
+    "Jiamin CHEN <vitochanjm@gmail.com>",
+    "Haoran WU <haoran@link.cuhk.edu.hk>"]
 readme = "README.md"
 repository = "https://github.com/hahaschool/SAKURA.git"
 keywords = ["bioinformatics", "deep-learning", "single-cell", "dimensionality-reduction"]
