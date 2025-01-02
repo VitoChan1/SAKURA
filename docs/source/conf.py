@@ -1,5 +1,5 @@
 # Configuration file for the Sphinx documentation builder.
-import sakura
+# import sakura
 # -- Project information
 
 project = 'SAKURA'
