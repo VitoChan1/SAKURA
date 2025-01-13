@@ -1,3 +1,7 @@
+"""
+    (to be implemented)
+"""
+
 class Infuser(torch.nn.Module):
     """
     Imbue external information into embeddings.

@@ -43,7 +43,9 @@ def parse_args():
 
 class sakuraAE(object):
     """
-    SAKURA model
+    A comprehensive class for managing SAKURA pipeline,
+    including model initialization, training, testing, and model inference or external model merging.
+    based on the configuration and argument settings.
 
     Args:
         config_json_path (str): path to config json file

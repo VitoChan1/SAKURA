@@ -1,3 +1,7 @@
+"""
+sample generations of various distributions
+"""
+
 from math import sqrt, sin, cos
 
 import numpy as np

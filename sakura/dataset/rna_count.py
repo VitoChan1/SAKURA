@@ -1,3 +1,7 @@
+"""
+General scRNA-Seq Count Dataset
+"""
+
 import json
 
 import numpy as np
@@ -13,7 +17,7 @@ from sakura.utils.data_transformations import ToTensor
 
 class SCRNASeqCountData(Dataset):
     """
-    General scRNA-Seq Count Dataset
+    General scRNA-Seq Count Dataset for Modular Inputs.
 
     Input:
     genotype_csv:
