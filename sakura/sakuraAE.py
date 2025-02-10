@@ -50,14 +50,14 @@ def parse_args():
 
 class sakuraAE(object):
     """
-    Comprehensive class for SAKURA pipeline
+    A comprehensive class for SAKURA pipeline
+
     managing model initialization, training, testing, and model inference or external model merging
     based on the configuration and argument settings.
 
+    .. note::
 
-    Note
-    -----
-    For more details of the configuration JSON structure, see :doc:`Configuration </config>`.
+        For more details of the configuration JSON structure, see :doc:`Configuration </config>`.
     """
 
     def __init__(self, config_json_path, verbose=False,
@@ -504,9 +504,9 @@ class sakuraAE(object):
 
         :return: None
 
-        Note
-        ----
-        The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
+        .. note::
+
+            The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
         If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
         which means that all selected phenotypes (or signatures) will be trained.
         This feature is designed for complex training scenarios where the neural network (NN) is partially forwarded.
@@ -743,9 +743,9 @@ class sakuraAE(object):
 
         :return: None
 
-        Note
-        ----
-        Note: The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
+        .. note::
+
+            The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
         If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
         which means that all selected phenotypes (or signatures) will be tested.
         This feature is designed for complex testing scenarios where the computation model is partially forwarded (i.e. some of the forward flags being set to False).
@@ -896,9 +896,8 @@ class sakuraAE(object):
 
         :return: None
 
-        Note
-        ----
-        Note: when epoch loss progressing is on, the progression will incur only for selected loss when an epoch ends (tick reach end).
+        .. note::
+            When epoch loss progressing is on, the progression will incur only for selected loss when an epoch ends (tick reach end).
         """
         split_configs = self.__lint_split_configs(split_configs)
 
@@ -1189,9 +1188,9 @@ class sakuraAE(object):
 
         :return: None
 
-        Note
-        ----
-        Note: See also :func:`train_hybrid` for details on how to perform training in a configured hybrid mode.
+        .. note::
+
+            See also :func:`train_hybrid` for details on how to perform training in a configured hybrid mode.
         """
         logger.info("Using multi-task dataloader")
 
@@ -1439,9 +1438,9 @@ class sakuraAE(object):
 
         :return: None
 
-        Note
-        ----
-        See also :func:`test` for details on how to perform a testing inference.
+        .. note::
+
+            See also :func:`test` for details on how to perform a testing inference.
         """
         if self.verbose:
             logger.debug('Executing inference routine {}', story)
@@ -1486,9 +1485,9 @@ class sakuraAE(object):
 
         :return: None
 
-        Note
-        ----
-        See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload` for details on configurations of
+        .. note::
+
+            See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload` for details on configurations of
         different tasks.
         """
         # Handle resume
