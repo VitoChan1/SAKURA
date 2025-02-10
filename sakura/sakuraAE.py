@@ -1173,7 +1173,7 @@ class sakuraAE(object):
                              perform_test=False, test_segmant=2000, tests: dict = None,
                              perform_checkpoint=False, checkpoint_segment=2000, checkpoint_prefix='', checkpoint_save_arch=False,
                              loss_prog_on_test: dict = None,
-                             resume=False, resume_dict: dict[str, Any] = None,
+                             resume=False, resume_dict=None,
                              prefetch_strategy='reuse', reuse_factor=8, reuse_shuffle_when_reassign=False):
         """
         Implement the multithread dataloader version of hybrid mode training, where model module splits are trained as configured.
