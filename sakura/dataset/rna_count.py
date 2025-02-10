@@ -1,5 +1,5 @@
 """
-General scRNA-Seq Count Dataset
+General scRNA-Seq count dataset
 """
 
 import json
@@ -17,10 +17,10 @@ from sakura.utils.data_transformations import ToTensor
 
 class SCRNASeqCountData(Dataset):
     """
-    General scRNA-Seq Count Dataset for Modular Inputs.
+    General scRNA-Seq count dataset for SAKURA inputs.
 
     Input:
-    genotype_csv:
+    gene_csv:
         * Assuming rows are genes, colmuns are samples(/cells)
         * rownames are gene identifiers (gene name, or ensembl ID)
         * colnames are sample identifiers (cell name)
@@ -58,12 +58,6 @@ class SCRNASeqCountData(Dataset):
         * ToOrdinal:
         * ToKBins:
         * LogNormalize:
-    """
-
-    """
-    Sample:
-    
-    
     """
 
     def __init__(self, gene_csv_path, pheno_csv_path,

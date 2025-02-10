@@ -44,11 +44,7 @@ class DataSplitter(object):
 
     def auto_random_stratified_k_bin_labelling(self, base, label, k, seed=None):
         """
-        :param base:
-        :param label:
-        :param k:
-        :param seed:
-        :return:
+        (to be implemented)
         """
         raise NotImplementedError
 

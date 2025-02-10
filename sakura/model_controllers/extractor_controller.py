@@ -536,7 +536,7 @@ class ExtractorController(object):
         :param dump_forward_results: should preserve forwarded tensors in the return dict
         :param detach: should loss be detached as specified in `detach_from`
         :param detach_from: starting from where should loss be detached
-        :param save_raw_loss: when `True`, apart fro mthe weighted losses, unweighted, raw losses will also be recorded
+        :param save_raw_loss: when `True`, apart from the weighted losses, unweighted, raw losses will also be recorded
         :return:
         """
         # Forward model (obtain pre-loss-calculated tensors)
@@ -919,6 +919,7 @@ class ExtractorController(object):
              forward_reconstruction=False, forward_main_latent=False, dump_latent=False, save_raw_loss=False):
         """
         Evaluate losses.
+
         :param batch:
         :param forward_pheno:
         :param selected_pheno:

@@ -1,5 +1,5 @@
 """
-
+Dask version of scRNA-seq count data
 """
 
 import json
@@ -21,7 +21,48 @@ from sakura.utils.data_transformations import ToTensor
 
 
 class SCRNASeqCountDataSparse(Dataset):
-    "Accepts matrixMM (could be dgcmatrix in R) as data contained (will still load everything into memory, but using sparse matrix now)."
+    """Accepts matrixMM (could be dgcmatrix in R) as data contained (will still load everything into memory, but using sparse matrix now).
+
+    Input:
+    gene_csv:
+        * Assuming rows are genes, colmuns are samples(/cells)
+        * rownames are gene identifiers (gene name, or ensembl ID)
+        * colnames are sample identifiers (cell name)
+    genotype_meta_csv:
+        * pre_procedure: transformations that will perform when *load* the dataset
+        * post_procedure: transformations that will perform when *export* requested samples
+    phenotype_csv:
+        * Assuming rows are samples, columns are metadata contents
+        * rownames are sample identifiers ()
+    phenotype_meta_csv:
+        * A json file to define Type, Range, and Order for phenotype columns
+        * Storage entity is a 'dict'
+        * Type: 'categorical', 'numeric', 'ordinal' (tbd)
+        * For 'categorical':
+            * Range: array of possible values, *ordered*
+        * pre_procedure
+        * post_procedure
+
+
+    Options:
+        * Mode
+
+    Modes:
+        * all
+        * sample_id
+        * expr
+        * pheno
+
+
+
+    Transformations:
+        * ToTensor:
+        * ToOneHot: transform categorical data to one-hot encoding, an order of classes should be specified, otherwise
+                    will use sorted labels, assuming the range of labels are from input
+        * ToOrdinal:
+        * ToKBins:
+        * LogNormalize:
+    """
 
     def __init__(self, gene_MM_path, gene_name_csv_path, cell_name_csv_path,
                  pheno_csv_path, pheno_df_dtype=None, pheno_df_na_filter=True,

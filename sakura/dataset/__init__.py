@@ -1,3 +1,3 @@
 """
-Miscellaneous dataset classes:
+Miscellaneous dataset classes
 """

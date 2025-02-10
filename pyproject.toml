@@ -36,6 +36,7 @@ classifiers = [
   torch = "^1.13.1"
   tqdm = "^4.65.0"
   dask = "^2023.1.1"
+  importlib-metadata = "^6.0.0"
 
   [tool.poetry.dev-dependencies]
   projen = "0.68.5"

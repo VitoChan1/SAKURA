@@ -1,5 +1,5 @@
 """
-SAKURA (Single-cell data Analysis with Knowledge inputs from User using Regularized Autoencoders)
+To call main function of SAKURA pipeline
 """
 
 from sakura.sakuraAE import main

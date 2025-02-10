@@ -1,5 +1,5 @@
 """
-Generic framework of SAKURA
+Generic pipeline of SAKURA
 """
 
 import argparse
@@ -19,6 +19,7 @@ import torch.optim
 import torch.utils.data
 from loguru import logger
 from tqdm import tqdm
+from importlib_metadata import version
 
 from sakura.dataset import rna_count, rna_count_sparse
 from sakura.model_controllers.extractor_controller import ExtractorController
@@ -28,7 +29,13 @@ from sakura.utils.logger import Logger
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    """
+    Parse command-line arguments for SAKURA pipeline.
+
+    :return: An object containing the parsed command-line arguments.
+    :rtype: argparse.Namespace
+    """
+    parser = argparse.ArgumentParser("SAKURA")
     parser.add_argument('-c', '--config', type=str, default='./config.json', help='model config JSON path')
     parser.add_argument('-v', '--verbose', type=bool, default=False, help='verbose console outputs')
     parser.add_argument('-s', '--suppress_train', type=bool, default=False, help='suppress model training, only setup dataset and model')
@@ -43,19 +50,33 @@ def parse_args():
 
 class sakuraAE(object):
     """
-    A comprehensive class for managing SAKURA pipeline,
-    including model initialization, training, testing, and model inference or external model merging.
+    Comprehensive class for SAKURA pipeline
+    managing model initialization, training, testing, and model inference or external model merging
     based on the configuration and argument settings.
 
-    Args:
-        config_json_path (str): path to config json file
-        verbose (bool): verbose console outputs
-        suppress_train (bool): suppress model training, only setup dataset and model
-        suppress_tensorboardX (bool): suppress Logger to initiate tensorboardX (to prevent flushing logs)
+
+    Note
+    -----
+    For more details of the configuration JSON structure, see :doc:`Configuration </config>`.
     """
+
     def __init__(self, config_json_path, verbose=False,
                  suppress_train=False, suppress_tensorboardX=False):
-                     
+        """
+        Initialize an instance sakuraAE pipeline.
+
+        :param config_json_path: Path to the configuration JSON file, which contains
+            all the necessary settings for the class
+        :type config_json_path: str
+        :param verbose: Whether to enable verbose console logging, defaults to False
+        :type verbose: bool
+        :param suppress_train: Whether to suppress model training, only setup dataset and model, defaults to False
+        :type suppress_train: bool
+        :param suppress_tensorboardX: Whether to suppress Logger to initiate tensorboardX
+            (to prevent flushing logs), defaults to False
+        :type suppress_tensorboardX: bool
+        """
+
         # Read configurations for arguments
         with open(config_json_path, 'r') as f:
             self.config = json.load(f)
@@ -134,6 +155,11 @@ class sakuraAE(object):
         self.train_story(story=self.config['story'])
 
     def setup_dataset(self):
+        """
+        Set up dataset for SAKURA model.
+
+        :return: None
+        """
         # Dataset (main part)
         if self.config['dataset']['type'] == 'rna_count':
             self.expr_csv_path = self.config['dataset'].get('expr_csv_path')
@@ -233,6 +259,11 @@ class sakuraAE(object):
             raise ValueError('Unsupported dataset type')
 
     def generate_splits(self):
+        """
+        Generate dataset split masks for model training and testing.
+
+        :return: None
+        """
         # Splits
         self.splits = dict()
         self.data_splitter = DataSplitter()
@@ -328,6 +359,13 @@ class sakuraAE(object):
             logger.debug('Splits: {}', self.splits)
 
     def integrity_check(self):
+        """
+        Perform an integrity check on the selected phenotype and signature
+        against the model dataset to ensure data consistency and validity.
+
+        :return: True if the integrity check passes, False otherwise.
+        :retype: bool
+        """
         pheno_meta = self.count_data.pheno_meta
         gene_meta = self.count_data.gene_meta
         signature_config = self.signature_config
@@ -406,37 +444,72 @@ class sakuraAE(object):
               train_signature=True, selected_signature=None,
               epoch=50, batch_size=100,
               tick_controller_epoch=True,
-              make_logs=True, log_prefix='train', log_loss_groups=['loss', 'regularization'], save_raw_loss=False,
-              dump_latent=True, latent_prefix='',
+              make_logs=True, log_prefix='train', log_loss_groups=['loss', 'regularization'],
+              save_raw_loss=False, #dump_latent=True, latent_prefix='',
               test_every_epoch=False, test_on_segment=False, test_segment=2000, tests=None,
               checkpoint_on_segment=False, checkpoint_segment=2000, checkpoint_prefix='', checkpoint_save_arch=False,
               resume=False, resume_dict=None,
               detach=False, detach_from=''):
         """
         Batch train model for at least one epoch.
-        :param split_id: (str) id of the split to be used in this train
-        :param train_main: (bool) should forward the main latent space part
-        :param train_pheno: (bool) should forward phenotype side tasks
-        :param selected_pheno: (list of str, or str, or None) phenotype id(s) used for phenotype side task, selected phenotype(s)
-         should be configured and in self.selected_pheno, if None, self.selected_pheno will take the place (i.e. train
-         all phenotypes selected), this feature is designed for complex training where NN is partially forwarded
-        :param train_signature: (bool) should forward gene signature side tasks
-        :param selected_signature: (list of str, or str, or None) similar to selected_pheno, but for signature
-        :param epoch: (int) epochs to be trained in this round of training
-        :param batch_size: (int) batch size to be used in this round of training
-        :param tick_controller_epoch: (bool) should controller epoch should be ticked (default: True)
-        :param make_logs: (bool) should information, including losses should be logged (default: True)
-        :param dump_latent: (bool) should all latent space representations be dumped after each batch (only cells within the split will be dumped)
-        :param log_prefix: (str) the prefix of the training log (for losses, this prefix will be added first to the item name in tensorboard and filename of latent embeddings)
-        :param latent_prefix: (str) the prefix to be added after log_prefix to latent embedding filename
-        :param test_every_epoch: (bool) should test/evaluation be performed after finishing each epochs
-        :param tests: (list of dict) test configurations
-        :param checkpoint_on_segment: (bool) should model be checkpointed after a certain tick interval
-        :param checkpoint_segment: (int) checkpoint segment length
-        :param checkpoint_prefix: (int) filename prefix for checkpoint files
-        :param resume: (bool) should resume from saved training session
-        :param resume_dict: (bool) session state dict used for resuming previous training
-        :return:
+
+        :param split_id: Split id to be used in this train
+        :type split_id: str
+        :param train_main: Whether to forward the main latent space part during training, defaults to True
+        :type train_main: bool
+        :param train_pheno: Whether to forward phenotype side task(s) during training, defaults to True
+        :type train_pheno: bool
+        :param selected_pheno*: Phenotype id(s) used for phenotype side tasks during training, selected phenotype(s)
+        :type selected_pheno: list[str] or str or None, optional
+        :param train_signature: Whether to forward gene signature side tasks during training, defaults to True
+        :type train_signature: bool
+        :param selected_signature*: Similar to selected_pheno, but for signature side tasks during training
+        :type selected_signature: list[str] or str or None, optional
+        :param epoch: Number of epochs to be trained in this round of training
+        :type epoch: int
+        :param batch_size: Batch size to be used in this round of training
+        :type batch_size: int
+        :param tick_controller_epoch: Should controller epoch be ticked, defaults to True
+        :type tick_controller_epoch: bool
+        :param make_logs: Should information, including losses be logged, defaults to True
+        :type make_logs: bool
+        :param log_prefix: Prefix of training log (for losses,
+            this prefix will be added first to the item name in tensorboard and filename of latent embeddings)
+        :type log_prefix: str
+        :param log_loss_groups: Selected loss(es) group to be logged
+        :type log_loss_groups: list[str]
+        :param save_raw_loss: Whether to record raw losses, defaults to False
+        :type save_raw_loss: bool
+        :param test_every_epoch: Should test/evaluation be performed after finishing each epoch, defaults to False
+        :type test_every_epoch: bool
+        :param tests: A list of test configuration dictionaries, where each dictionary
+            should contain keys: 'on_split', 'make_logs', 'dump_latent' and 'latent_prefix'
+        :type tests: list[dict[str,Any]], optional
+        :param checkpoint_on_segment: Should model be checkpointed after a certain tick interval, defaults to False
+        :type checkpoint_on_segment: bool
+        :param checkpoint_segment: Tick interval of checkpoint segment
+        :type checkpoint_segment: int
+        :param checkpoint_prefix: Prefix of checkpoint files
+        :type checkpoint_prefix: str
+        :param checkpoint_save_arch: Should model architecture be checkpointed, defaults to False
+        :type checkpoint_save_arch: bool
+        :param resume: Whether to resume from saved training session, defaults to False
+        :type resume: bool
+        :param resume_dict: Session state dictionary used for resuming previous training
+        :type resume_dict: dict[str, Any], optional
+        :param detach: Should loss be detached as specified in `detach_from` from the computation graph, defaults to False
+        :type detach: bool
+        :param detach_from: Starting point in the model from which the loss should be detached
+        :type detach_from: str
+
+        :return: None
+
+        Note
+        ----
+        The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
+        If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
+        which means that all selected phenotypes (or signatures) will be trained.
+        This feature is designed for complex training scenarios where the neural network (NN) is partially forwarded.
         """
 
         # Argument checks
@@ -625,6 +698,58 @@ class sakuraAE(object):
              dump_predicted_phenos=False,
              dump_predicted_signatures=False,
              compression='none', save_raw_loss=False):
+        """
+        Test all latents of the model, with options to evaluate specific loss groups and dump selected latents.
+
+        :param split_id: id of the split to be used in this test
+        :type split_id: str
+        :param test_main: Whether to forward the main latent space part during testing, defaults to True
+        :type test_main: bool
+        :param test_pheno: Whether to forward phenotype side tasks during testing, defaults to True
+        :type test_pheno: bool
+        :param selected_pheno*: Phenotype id(s) used for phenotype side tasks during testing, selected phenotype(s)
+        :type selected_pheno: list[str] or str or None, optional
+        :param test_signature: Whether to forward gene signature side tasks during testing, defaults to True
+        :type test_signature: bool
+        :param selected_signature*: Similar to selected_pheno, but for signature side tasks during testing
+        :type selected_signature: list[str] or str or None, optional
+        :param make_logs: Should information, including losses be logged, defaults to True
+        :type make_logs: bool
+        :param log_prefix: Prefix of testing log (for losses,
+            this prefix will be added first to the item name in tensorboard and filename of latent embeddings)
+        :type log_prefix: str
+        :param log_loss_groups: Selected loss(es) group to be logged
+        :type log_loss_groups: list[str]
+        :param dump_latent: Should all latent space representations be dumped after each batch, defaults to True
+            (only cells within the split will be dumped)
+        :tupe dump_latent: bool
+        :param latent_prefix: Prefix to be added after <log_prefix> to latent embedding filename
+        :type latent_prefix: str
+        :param dump_pre_encoder_output: Whether to dump output of the pre-encoder module, defaults to False
+        :type dump_pre_encoder_output: bool
+        :param dump_reconstructed_output: Whether to dump output of the reconstruction module, defaults to False
+        :type dump_reconstructed_output: bool
+        :param reconstructed_output_naming: Set the column names of the reconstructed matrix,
+            can be 'dimid' which means dimension id or 'genenames'.
+        :type reconstructed_output_naming: Literal['dimid', 'genenames']
+        :param dump_predicted_phenos: Whether to dump predicted phenotype output, defaults to False
+        :type dump_predicted_phenos: bool
+        :param dump_predicted_signatures: Whether to dump predicted signature output, defaults to False
+        :type dump_predicted_signatures: bool
+        :param compression: compression type of CSV files, can be 'hdf', 'gzip' or 'none'
+        :type compression: Literal['hdf', 'gzip','none']
+        :param save_raw_loss: Whether to record raw losses, defaults to False
+        :type save_raw_loss: bool
+
+        :return: None
+
+        Note
+        ----
+        Note: The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
+        If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
+        which means that all selected phenotypes (or signatures) will be tested.
+        This feature is designed for complex testing scenarios where the computation model is partially forwarded (i.e. some of the forward flags being set to False).
+        """
 
         selected_split_mask = self.splits[split_id]
 
@@ -680,7 +805,10 @@ class sakuraAE(object):
 
 
     def __lint_split_configs(self, split_configs):
-        # Lint split_configs
+        """Lint split_configs, match train and select option of phenotype(s)/signature(s)
+
+        :return: None
+        """
         for cur_split_key in split_configs.keys():
             if split_configs[cur_split_key]['train_pheno'] == 'True':
                 if split_configs[cur_split_key].get('selected_pheno') is None:
@@ -720,21 +848,57 @@ class sakuraAE(object):
                      loss_prog_on_test: dict = None,
                      resume=False, resume_dict=None):
         """
-        Train model in hydrid mode
+        Train the model in hybrid mode, where model module splits are trained as configured.
 
-        Note: when epoch loss progressing is on, then the progression will incur only for selected loss when an epoch ends (tick reach end)
+        :param split_configs: A dictionary containing module split configs used for training, should contain below keys
+            for each module split: 'use_split','batch_size','train_main_latent','train_pheno','train_signature'
+        :type split_configs: dict[str, str or int]
+        :param ticks: The total number of training iterations, each tick corresponding to the
+               training of one batch of data
+        :type ticks: int
+        :param hybrid_mode: hybrid mode defines how the module splits are trained, default to 'interleave'
+            where each module split is trained in a round-robin fashion.
+        :type hybrid_mode: Literal['interleave', 'patern', 'sum']
+        :param prog_loss_weight_mode: The mode for progressive loss weighting. default to 'epoch_end'
+            where loss weights progress at the end of each epoch.
+        :type prog_loss_weight_mode: Literal['on_test', 'epoch_end']
+        :param make_logs: Should information, including losses be logged, defaults to True
+        :type make_logs: bool
+        :param log_prefix: Prefix of training log (for losses,
+            this prefix will be added first to the item name in tensorboard and filename of latent embeddings)
+        :type log_prefix: str
+        :param log_loss_groups: Selected loss(es) group to be logged
+        :type log_loss_groups: list[str]
+        :param save_raw_loss: Whether to record raw losses, defaults to False
+        :type save_raw_loss: bool
+        :param perform_test: Whether to perform testing during training at specified <test_segmant> intervals, defaults to False
+        :type perform_test: bool
+        :param test_segmant: Tick interval at which testing is performed, defaults to 2000
+        :type test_segment: int
+        :param tests: A list of test configuration dictionaries, where each dictionary
+            should contain keys: 'on_split', 'make_logs', 'dump_latent' and 'latent_prefix'
+        :type tests: list[dict[str,Any]], optional
+        :param perform_checkpoint: Whether to checkpoint the model a certain tick interval, defaults to False
+        :type perform_checkpoint: bool
+        :param checkpoint_segment: Tick interval of model checkpoint, defaults to 2000
+        :type checkpoint_segment int
+        :param checkpoint_prefix: Prefix of checkpoint files
+        :type checkpoint_prefix: str
+        :param checkpoint_save_arch: Should model architecture be checkpointed, defaults to False
+        :type checkpoint_save_arch: bool
+        :param loss_prog_on_test: A dictionary specifying progressive loss weights to use during testing when prog_loss_weight_mode is 'on_test'.
+            should contain keys: 'prog_main','train_pheno','selected_pheno','train_signature' and 'selected_signature'
+        :type loss_prog_on_test: dict[str, Any], optional
+        :param resume: Whether to resume from saved training session, defaults to False
+        :type resume: bool
+        :param resume_dict: Session state dictionary used for resuming previous training
+        :type resume_dict: dict[str, Any], optional
 
-        :param split_configs:
-        :param ticks:
-        :param hybrid_mode:
-        :param prog_loss_weight_mode:
-        :param make_logs:
-        :param log_prefix:
-        :param perform_test:
-        :param test_segmant:
-        :param tests:
-        :param loss_prog_on_test:
-        :return:
+        :return: None
+
+        Note
+        ----
+        Note: when epoch loss progressing is on, the progression will incur only for selected loss when an epoch ends (tick reach end).
         """
         split_configs = self.__lint_split_configs(split_configs)
 
@@ -1009,12 +1173,25 @@ class sakuraAE(object):
                              perform_test=False, test_segmant=2000, tests: dict = None,
                              perform_checkpoint=False, checkpoint_segment=2000, checkpoint_prefix='', checkpoint_save_arch=False,
                              loss_prog_on_test: dict = None,
-                             resume=False, resume_dict=None,
+                             resume=False, resume_dict: dict[str, Any] = None,
                              prefetch_strategy='reuse', reuse_factor=8, reuse_shuffle_when_reassign=False):
         """
-        Will implement the multithread dataloader version of training flowcontrol with storyline.
+        Implement the multithread dataloader version of hybrid mode training, where model module splits are trained as configured.
 
-        :return:
+        :param prefetch_strategy: The strategy for prefetching data in the multithread dataloader,
+            defaults to 'reuse' sets of loaded data batches to reduce I/O overhead
+        :type prefetch_strategy: Literal['fresh','reuse']
+        :param reuse_factor: The number of sets of prefetched data batch is reused
+        :type reuse_factor: int
+        :param reuse_shuffle_when_reassign: Whether to shuffle a set of data batches
+            when reassigning them for reuse, defaults to False
+        :type reuse_shuffle_when_reassign: bool
+
+        :return: None
+
+        Note
+        ----
+        Note: See also :func:`train_hybrid` for details on how to perform training in a configured hybrid mode.
         """
         logger.info("Using multi-task dataloader")
 
@@ -1204,6 +1381,21 @@ class sakuraAE(object):
     def save_checkpoint(self, training_state=None,
                         checkpoint_path=None,
                         save_model_arch=False, save_config=False):
+        """
+        Save the current state of the model and training process as a checkpoint.
+
+        :param training_state: A dictionary containing the current state of the training process，which may include
+            the current tick number, epoch number, data sampler status, etc.
+        :type training_state: dict[str, Any]
+        :param checkpoint_path: File path where the checkpoint will be saved
+        :type checkpoint_path: str
+        :param save_model_arch: Whether to save the model architecture in the checkpoint, defaults to False
+        :type save_model_arch: bool
+        :param save_config: Whether to save a redundant copy of the model's configuration for checking, defaults to False
+        :type save_config: bool
+
+        :return: None
+        """
         # Save model by controllor
         controllor_ret = self.controller.save_checkpoint(save_model_arch=save_model_arch,
                                                          save_config=save_config)
@@ -1218,6 +1410,15 @@ class sakuraAE(object):
         torch.save(controllor_ret, checkpoint_path)
 
     def load_checkpoint(self, checkpoint_path):
+        """
+        Load a checkpoint file and resume the model's state, including parameters, random states, training progress, etc.
+
+        :param checkpoint_path: File path of the checkpoint to load
+        :type checkpoint_path: str
+
+        :return: A dictionary containing the loaded checkpoint data
+        :rtype: dict
+        """
         checkpoint = torch.load(checkpoint_path)
         self.controller.load_checkpoint(state_dict=checkpoint)
 
@@ -1228,7 +1429,20 @@ class sakuraAE(object):
 
         return checkpoint
 
-    def execute_inference(self, story: list, resume_dict=None):
+    def execute_inference(self, story: list):
+        """
+        Perform inference on the given tasks represented as a list of stories.
+
+        :param story: A list of dictionaries representing the story elements, should contain an <action> key defaults to 'test',
+            as well as other testing setting keys.
+        :type story: list[dict[str, Any]]
+
+        :return: None
+
+        Note
+        ----
+        See also :func:`test` for details on how to perform a testing inference.
+        """
         if self.verbose:
             logger.debug('Executing inference routine {}', story)
 
@@ -1258,6 +1472,25 @@ class sakuraAE(object):
 
     def train_story(self, story: list,
                     resume=False, resume_dict=None):
+        """
+        Train the model on the given sets of tasks represented as a list of storylines.
+
+        :param story: A list of dictionaries should contain the necessary information for training and/or testing,
+            such as hyperparameters, task-specific configurations and checkpoint settings.
+        :type story: list[dict[str, Any]]
+        :param resume: Whether to resume training from a previous state using the information provided in
+                   <resume_dict>, defaults to False
+        :type resume: bool
+        :param resume_dict: A dictionary containing the state information needed to resume training
+        :type resume_dict: dict[str, Any], optional
+
+        :return: None
+
+        Note
+        ----
+        See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload` for details on configurations of
+        different tasks.
+        """
         # Handle resume
         cur_story_item_idx = 0
         if resume:
@@ -1402,8 +1635,30 @@ class sakuraAE(object):
 
             cur_story_item_idx += 1
 
-
     def insert_external_module(self, insert_config:dict, verbose=True):
+        """
+        Insert an external module into the SAKURA model and merge it with the existing architecture.
+
+        :param insert_config: A configuration dictionary defining how to load and integrate the external module.
+            Expected structure:
+            {
+                "ext_model_config_path": str,     # Path to the external model's architecture config (JSON)
+                "ext_signature_config_path": str, # Path to the signature config (JSON)
+                "ext_pheno_config_path": str,     # Path to the phenotype config (JSON)
+                "ext_checkpoint_path": str,       # Path to the external model's checkpoint file
+                "source": str,                    # Source component type in the external model
+                                                    (e.g., "decoder", "pheno_models", "signature_regressors")
+                "source_name": Optional[str],     # Name of the specific component (if applicable)
+                "destination_type": str,          # Target component type in the current model
+                                                    (e.g., "decoder", "pheno", "signature")
+                "destination_name": Optional[str] # Name of the target component (if applicable)
+            }
+        :type insert_config: dict[str, Any]
+        :param verbose: Whether to enable verbose console logging, defaults to True
+        :type verbose: bool
+
+        :return: None
+        """
         if verbose:
             logger.debug('Inserting external modules...')
             logger.debug('Insertion config: {}', insert_config)
@@ -1472,10 +1727,11 @@ class sakuraAE(object):
 
 @logger.catch
 def main():
-    logger.info('SCARE/SAKURA Prototype')
+    logger.info(f'SAKURA v{version("sakura")}')
     logger.info('Working directory: {}', os.getcwd())
 
     args = parse_args()
+    #print(args.echo)
     if type(args.inference) is str and len(args.inference) > 0:
         if args.verbose:
             logger.debug("Entering inference mode from checkpoint: {}", args.inference)
