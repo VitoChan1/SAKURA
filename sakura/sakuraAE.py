@@ -50,9 +50,9 @@ def parse_args():
 
 class sakuraAE(object):
     """
-    A comprehensive class for SAKURA pipeline
+    A comprehensive class for SAKURA pipeline.
 
-    managing model initialization, training, testing, and model inference or external model merging
+    This class manages overall workflow of SAKURA includeing model initialization, training, testing, and model inference or external model merging
     based on the configuration and argument settings.
 
     .. note::
@@ -63,7 +63,7 @@ class sakuraAE(object):
     def __init__(self, config_json_path, verbose=False,
                  suppress_train=False, suppress_tensorboardX=False):
         """
-        Initialize an instance sakuraAE pipeline.
+        Initialize an sakuraAE pipeline instance.
 
         :param config_json_path: Path to the configuration JSON file, which contains
             all the necessary settings for the class
@@ -360,8 +360,7 @@ class sakuraAE(object):
 
     def integrity_check(self):
         """
-        Perform an integrity check on the selected phenotype and signature
-        against the model dataset to ensure data consistency and validity.
+        Perform integrity check on selected phenotypes/signatures against the input dataset.
 
         :return: True if the integrity check passes, False otherwise.
         :retype: bool
@@ -507,9 +506,9 @@ class sakuraAE(object):
         .. note::
 
             The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
-        If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
-        which means that all selected phenotypes (or signatures) will be trained.
-        This feature is designed for complex training scenarios where the neural network (NN) is partially forwarded.
+            If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
+            which means that all selected phenotypes (or signatures) will be trained.
+            This feature is designed for complex training scenarios where the neural network (NN) is partially forwarded.
         """
 
         # Argument checks
@@ -746,9 +745,9 @@ class sakuraAE(object):
         .. note::
 
             The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
-        If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
-        which means that all selected phenotypes (or signatures) will be tested.
-        This feature is designed for complex testing scenarios where the computation model is partially forwarded (i.e. some of the forward flags being set to False).
+            If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
+            which means that all selected phenotypes (or signatures) will be tested.
+            This feature is designed for complex testing scenarios where the computation model is partially forwarded (i.e. some of the forward flags being set to False).
         """
 
         selected_split_mask = self.splits[split_id]
@@ -1488,7 +1487,7 @@ class sakuraAE(object):
         .. note::
 
             See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload` for details on configurations of
-        different tasks.
+            different tasks.
         """
         # Handle resume
         cur_story_item_idx = 0
@@ -1636,21 +1635,26 @@ class sakuraAE(object):
 
     def insert_external_module(self, insert_config:dict, verbose=True):
         """
-        Insert an external module into the SAKURA model and merge it with the existing architecture.
+        Insert an external module and merge it with SAKURA model.
 
-        :param insert_config: A configuration dictionary defining how to load and integrate the external module.
-            Expected structure:
+        :param insert_config: A configuration dictionary defining how to load and integrate the external module(s).
+
+        .. note::
+        
+            Expected structure should be as follows:
             {
-                "ext_model_config_path": str,     # Path to the external model's architecture config (JSON)
-                "ext_signature_config_path": str, # Path to the signature config (JSON)
-                "ext_pheno_config_path": str,     # Path to the phenotype config (JSON)
-                "ext_checkpoint_path": str,       # Path to the external model's checkpoint file
-                "source": str,                    # Source component type in the external model
-                                                    (e.g., "decoder", "pheno_models", "signature_regressors")
-                "source_name": Optional[str],     # Name of the specific component (if applicable)
-                "destination_type": str,          # Target component type in the current model
-                                                    (e.g., "decoder", "pheno", "signature")
-                "destination_name": Optional[str] # Name of the target component (if applicable)
+                'module_name': {
+                    "ext_model_config_path": str,     # Path to the external model's architecture config (JSON)
+                    "ext_signature_config_path": str, # Path to the signature config (JSON)
+                    "ext_pheno_config_path": str,     # Path to the phenotype config (JSON)
+                    "ext_checkpoint_path": str,       # Path to the external model's checkpoint file
+                    "source": str,                    # Source component type in the external model
+                                                        (e.g., "decoder", "pheno_models", "signature_regressors")
+                    "source_name": Optional[str],     # Name of the specific component (if applicable)
+                    "destination_type": str,          # Target component type in the current model
+                                                        (e.g., "decoder", "pheno", "signature")
+                    "destination_name": Optional[str] # Name of the target component (if applicable)
+                }
             }
         :type insert_config: dict[str, Any]
         :param verbose: Whether to enable verbose console logging, defaults to True
