@@ -1637,30 +1637,28 @@ class sakuraAE(object):
         """
         Insert an external module and merge it with SAKURA model.
 
-        :param insert_config: A configuration dictionary defining how to load and integrate the external module(s).
-
-        .. note::
-        
-            Expected structure should be as follows:
-            {
-                'module_name': {
-                    "ext_model_config_path": str,     # Path to the external model's architecture config (JSON)
-                    "ext_signature_config_path": str, # Path to the signature config (JSON)
-                    "ext_pheno_config_path": str,     # Path to the phenotype config (JSON)
-                    "ext_checkpoint_path": str,       # Path to the external model's checkpoint file
-                    "source": str,                    # Source component type in the external model
-                                                        (e.g., "decoder", "pheno_models", "signature_regressors")
-                    "source_name": Optional[str],     # Name of the specific component (if applicable)
-                    "destination_type": str,          # Target component type in the current model
-                                                        (e.g., "decoder", "pheno", "signature")
-                    "destination_name": Optional[str] # Name of the target component (if applicable)
-                }
-            }
+        :param insert_config*: A configuration dictionary defining how to load and integrate the external module(s).
         :type insert_config: dict[str, Any]
         :param verbose: Whether to enable verbose console logging, defaults to True
         :type verbose: bool
 
         :return: None
+
+        .. note::
+
+            Expected <insert_config> structure:
+            {
+                'module_name': {
+                    "ext_model_config_path": (str) - Path to the external model's architecture config (JSON)
+                    "ext_signature_config_path": (str) - Path to the signature config (JSON)
+                    "ext_pheno_config_path": (str) - Path to the phenotype config (JSON)
+                    "ext_checkpoint_path": (str) - Path to the external model's checkpoint file
+                    "source": (str) -  Source component type in the external model (e.g., "decoder", "pheno_models", "signature_regressors")
+                    "source_name": (Optional[str]) - Name of the specific component (if applicable)
+                    "destination_type": (str) - Target component type in the current model  (e.g., "decoder", "pheno", "signature")
+                    "destination_name": (Optional[str]) - Name of the target component (if applicable)
+                }
+            }
         """
         if verbose:
             logger.debug('Inserting external modules...')
