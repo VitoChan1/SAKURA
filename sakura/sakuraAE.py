@@ -55,9 +55,7 @@ class sakuraAE(object):
     This class manages overall workflow of SAKURA includeing model initialization, training, testing, and model inference or external model merging
     based on the configuration and argument settings.
 
-    .. note::
 
-        For more details of the configuration JSON structure, see :doc:`Configuration </config>`.
     """
 
     def __init__(self, config_json_path, verbose=False,
@@ -459,11 +457,11 @@ class sakuraAE(object):
         :param train_pheno: Whether to forward phenotype side task(s) during training, defaults to True
         :type train_pheno: bool
         :param selected_pheno*: Phenotype id(s) used for phenotype side tasks during training, selected phenotype(s)
-        :type selected_pheno: list[str] or str or None, optional
+        :type selected_pheno: dict or list[str] or str or None, optional
         :param train_signature: Whether to forward gene signature side tasks during training, defaults to True
         :type train_signature: bool
         :param selected_signature*: Similar to selected_pheno, but for signature side tasks during training
-        :type selected_signature: list[str] or str or None, optional
+        :type selected_signature: dict or list[str] or str or None, optional
         :param epoch: Number of epochs to be trained in this round of training
         :type epoch: int
         :param batch_size: Batch size to be used in this round of training
@@ -496,7 +494,7 @@ class sakuraAE(object):
         :type resume: bool
         :param resume_dict: Session state dictionary used for resuming previous training
         :type resume_dict: dict[str, Any], optional
-        :param detach: Should loss be detached as specified in `detach_from` from the computation graph, defaults to False
+        :param detach: Should loss be detached as specified in <detach_from> from the computation graph, defaults to False
         :type detach: bool
         :param detach_from: Starting point in the model from which the loss should be detached
         :type detach_from: str
@@ -504,7 +502,6 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
             If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
             which means that all selected phenotypes (or signatures) will be trained.
@@ -743,7 +740,6 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
             If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
             which means that all selected phenotypes (or signatures) will be tested.
@@ -849,7 +845,7 @@ class sakuraAE(object):
         """
         Train the model in hybrid mode, where model module splits are trained as configured.
 
-        :param split_configs: A dictionary containing module split configs used for training, should contain below keys
+        :param split_configs: A dictionary containing module split configurations used for training, should contain below keys
             for each module split: 'use_split','batch_size','train_main_latent','train_pheno','train_signature'
         :type split_configs: dict[str, str or int]
         :param ticks: The total number of training iterations, each tick corresponding to the
@@ -857,7 +853,7 @@ class sakuraAE(object):
         :type ticks: int
         :param hybrid_mode: hybrid mode defines how the module splits are trained, default to 'interleave'
             where each module split is trained in a round-robin fashion.
-        :type hybrid_mode: Literal['interleave', 'patern', 'sum']
+        :type hybrid_mode: Literal['interleave', 'pattern', 'sum']
         :param prog_loss_weight_mode: The mode for progressive loss weighting. default to 'epoch_end'
             where loss weights progress at the end of each epoch.
         :type prog_loss_weight_mode: Literal['on_test', 'epoch_end']
@@ -1188,7 +1184,6 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             See also :func:`train_hybrid` for details on how to perform training in a configured hybrid mode.
         """
         logger.info("Using multi-task dataloader")
@@ -1438,7 +1433,6 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             See also :func:`test` for details on how to perform a testing inference.
         """
         if self.verbose:
@@ -1485,7 +1479,6 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload` for details on configurations of
             different tasks.
         """
@@ -1645,7 +1638,6 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             Expected <insert_config> structure:
             {
                 'module_name': {

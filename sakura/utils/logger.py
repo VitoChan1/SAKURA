@@ -1,3 +1,7 @@
+"""
+Logger of SAKURA pipeline
+"""
+
 import json
 import pickle
 import warnings

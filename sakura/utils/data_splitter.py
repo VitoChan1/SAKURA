@@ -1,14 +1,25 @@
+"""
+Various Data splitters
+"""
+
 import numpy as np
 
 class DataSplitter(object):
 
     def auto_random_k_bin_labelling(self, base: np.ndarray, k: int, seed=None) -> np.ndarray:
         """
-        Obtain a label vector (containing 1~k for included points, 0 for not included points)
-        :param base:
-        :param k:
-        :param seed: a temporary seed
-        :return: a numpy.integer array, consisting 0 and 1~k
+        Obtain a label vector containing 1~k for included points, 0 for not included points.
+        This function utilizes k labels to prepare dataset usage by allowing the selection of data.
+
+        :param base: The predefined label vector to work with
+        :type base: np.ndarray[base.dtype, np.integer]
+        :param k: The number of included points and overall divisions for later incremental selection percentages
+        :type k: int
+        :param seed: a temporary random seed
+        :type seed: int, optional
+
+        :return: A random assigned 0~k label vector indicating inclusion and exclusion of points
+        :rtype: np.ndarray[np.integer]
         """
         # Sanity check
 
@@ -50,13 +61,17 @@ class DataSplitter(object):
 
     def get_incremental_select_unselect_split(self, base: np.ndarray, k: int) -> np.ndarray:
         """
-        Obtain 1 split code from label vector, points labelled from 1~k are considered as selected (1),
-        otherwise not selected(0)
-        Useful when determining overall train/test split directly from predefined labels
+        Obtain a split code from label vector, points labelled from 1~k are considered as selected (1),
+        otherwise not selected (0).
+        Useful when determining overall train/test split directly from predefined labels.
 
-        :param base:
-        :param k:
-        :return: numpy.integer array, consisting 0 and 1
+        :param base: The predefined label vector to work with
+        :type base: np.ndarray[base.dtype, np.integer]
+        :param k: Selection threshold k for the base label vector input
+        :type k: int
+
+        :return: A 0/1 label vector indicating selection of points
+        :rtype: np.ndarray[np.integer]
         """
         # Sanity check
         if type(base) is not np.ndarray:
@@ -77,11 +92,16 @@ class DataSplitter(object):
         """
         Obtain 2 split codes from label vector, points labelled from 1~k are considered as train (1 in first vector),
         rest of selected (non-zero) cells are test(1 in second vector),
-        unselected points remain unchanged(0 in all vectors)
+        unselected points remain unchanged (0 in all vectors)
         Useful when planning to increase points in supervision incrementally (e.g. select 30% cells with known certain known labels)
-        :param base: which label vector should be processed
-        :param k:
-        :return: a dictionary, "train" and "test" split codes
+
+        :param base: The predefined label vector to work with
+        :type base: np.ndarray[base.dtype, np.integer]
+        :param k: Selection threshold k for the base label vector input
+        :type k: int
+
+        :return: A dictionary with "train" and "test" split codes
+        :rtype: dict[str, np.ndarray]
         """
 
         # Sanity check is omitted as performed in get_incremental_select_unselect_split()
@@ -98,8 +118,12 @@ class DataSplitter(object):
     def get_k_fold_cv_split(self, base: np.ndarray) -> dict:
         """
         Obtain cross validation foldings directly from 1~k labels, 0 considered to be not selected
-        :param base:
-        :return: a dictionary, key is labels, mapped to disctionarys of test and train
+
+        :param base: The predefined label vector to work with
+        :type base: np.ndarray[base.dtype, np.integer]
+
+        :return: A dictionary with k folding keys, mapped to k dictionaries with "train" and "test" split codes
+        :rtype: dict[str, dict[str, np.ndarray]]
         """
 
         # Sanity check
@@ -127,13 +151,18 @@ class DataSplitter(object):
 
     def auto_random_k_fold_cv_split(self, base: np.ndarray, k: int, seed=None):
         """
-        Obtain k*2 split codes based on random K-Fold split, where train or test are labelled as 1 (corresp.)
+        Obtain 2*k split codes based on random K-Fold split, where train or test are labelled as 1 (corresp.)
         Useful when planning for a K-Fold cross validation.
 
-        :param base: which split code/mask should be built on, 0: not included, 1: included
-        :param k: number of bins
-        :param seed: random seed
-        :return: A dict() of
+        :param base: The predefined label vector to work with, 0: not included, 1: included
+        :type base: np.ndarray[base.dtype, np.integer]
+        :param k: The number of included points and overall bin divisions
+        :type k: int
+        :param seed: a temporary random seed
+        :type seed: int, optional
+
+        :return: A dictionary with k folding keys, mapped to k dictionaries with "train" and "test" split codes
+        :rtype: dict[str, dict[str, np.ndarray]]
         """
 
         k_bin_label = self.auto_random_k_bin_labelling(base, k, seed)

@@ -1,16 +1,28 @@
+"""
+Sliced Wasserstein distance for loss computation
+
+Reference:
+    Adapted from https://github.com/skolouri/swae
+"""
+
 import numpy as np
 import torch
 
 class SlicedWasserstein(object):
+    """
+    Computes Sliced Wasserstein Distance between encoded samples and target distribution
+    """
     def rand_projections(self, embedding_dim, num_samples=50):
-        """This function generates `num_samples` random samples from the latent space's unit sphere.
+        """
+        This function generates <num_samples> L2-normalized random samples from unit sphere in latent space.
 
-            Args:
-                embedding_dim (int): embedding dimensionality
-                num_samples (int): number of random projection samples
+        :param embedding_dim: Dimensionality of the latent space
+        :type embedding_dim: int
+        :param num_samples: Number of random projection vectors to generate, defaults to 50
+        :type num_samples: int
 
-            Return:
-                torch.Tensor: tensor of size (num_samples, embedding_dim)
+        :return: Normalized projection vectors of shape (num_samples, embedding_dim)
+        :rtype: torch.Tensor
         """
         projections = [w / np.sqrt((w ** 2).sum())  # L2 normalization
                        for w in np.random.normal(size=(num_samples, embedding_dim))]
@@ -22,18 +34,24 @@ class SlicedWasserstein(object):
                                      num_projections=50,
                                      p=2,
                                      device='cpu'):
-        """ Sliced Wasserstein Distance between encoded samples and drawn distribution samples.
-
-            Args:
-                encoded_samples (toch.Tensor): tensor of encoded training samples
-                distribution_samples (torch.Tensor): tensor of drawn distribution training samples
-                num_projections (int): number of projections to approximate sliced wasserstein distance
-                p (int): power of distance metric
-                device (torch.device): torch device (default 'cpu')
-
-            Return:
-                torch.Tensor: tensor of wasserstrain distances of size (num_projections, 1)
         """
+        Internal method: Sliced Wasserstein Distance between encoded samples and drawn distribution samples.
+
+        :param encoded_samples: Samples from encoded distribution
+        :type encoded_samples: torch.Tensor
+        :param distribution_samples: Samples from drawn distribution
+        :type distribution_samples: torch.Tensor
+        :param num_projections: Number of projections to approximate sliced wasserstein distance
+        :type num_projections: int
+        :param p: Exponent for Wasserstein-p distance, defaults to 2
+        :type p:int
+        :param device: torch computation device, defaults to 'cpu'
+        :type device: Literal['cpu', 'cuda']
+
+        :return: Sliced Wasserstrain distances of size (num_projections, 1)
+        :rtype: torch.Tensor
+        """
+
         # derive latent space dimension size from random samples drawn from latent prior distribution
         embedding_dim = distribution_samples.size(1)
         # generate random projections in latent space
@@ -60,18 +78,24 @@ class SlicedWasserstein(object):
                                     num_projections=50,
                                     p=2,
                                     device='cpu'):
-        """ Sliced Wasserstein Distance between encoded samples and drawn distribution samples.
-
-            Args:
-                encoded_samples (tocrh.Tensor): tensor of encoded training samples
-                distribution_fn (func): a function to generate distributions
-                num_projections (int): number of projections to approximate sliced wasserstein distance
-                p (int): power of distance metric
-                device (torch.device): torch device (default 'cpu')
-
-            Return:
-                torch.Tensor: tensor of wasserstrain distances of size (num_projections, 1)
         """
+        Compute SWD between encoded samples and distribution function samples
+
+        :param encoded_samples: Samples from encoded distribution
+        :type encoded_samples: torch.Tensor
+        :param distribution_fn: Function that generates drawn distribution samples (args: batch_size, n_dim)
+        :type distribution_fn: Callable
+        :param num_projections: Number of projections to approximate sliced wasserstein distance
+        :type num_projections: int
+        :param p: Exponent for Wasserstein-p distance, defaults to 2
+        :type p:int
+        :param device: torch computation device, defaults to 'cpu'
+        :type device: Literal['cpu', 'cuda']
+
+        :return: Sliced Wasserstrain distances of size (num_projections, 1)
+        :rtype: torch.Tensor
+        """
+        
         # derive batch size from encoded samples
         batch_size = encoded_samples.size(0)
         latent_dim = encoded_samples.size(1)

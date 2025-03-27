@@ -17,50 +17,46 @@ from sakura.utils.data_transformations import ToTensor
 
 class SCRNASeqCountDataDask(Dataset):
     """
-    Dask version of scRNA-seq count datas. Fits for dataset with a very large number of cells.
+    Dask version of scRNA-seq count dataset class for SAKURA inputs.
 
-    Parameters
-    ----------
+    This class fits for dataset with a very large number of cells.
+
+    Expected inputs:
+    Unlike rna_count, which directly accepts the Seurat compatible datasheets (i.e. row gene, col cell)
     gene_csv:
-        * Assuming rows are genes, colmuns are samples(/cells)
-        * rownames are gene identifiers (gene name, or ensembl ID)
-        * colnames are sample identifiers (cell name)
+        * Assuming rows are cells (or samples), columns are genes
+        * rownames are sample identifiers (cell names)
+        * colnames are gene identifiers (gene names, or nsembl IDs)
     genotype_meta_csv:
+        * A JSON file related to gene data processing
         * pre_procedure: transformations that will perform when *load* the dataset
         * post_procedure: transformations that will perform when *export* requested samples
     phenotype_csv:
-        * Assuming rows are samples, columns are metadata contents
-        * rownames are sample identifiers ()
+        * Assuming rows are cells (or samples), columns are metadata features
+        * rownames are sample identifiers (cell names)
     phenotype_meta_csv:
-        * A json file to define Type, Range, and Order for phenotype columns
-        * Storage entity is a 'dict'
+        * A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations
+        for SAKURA model training
+        * Storage entity is a dict
         * Type: 'categorical', 'numeric', 'ordinal' (tbd)
         * For 'categorical':
             * Range: array of possible values, *ordered*
-        * pre_procedure
-        * post_procedure
-
-
+        * pre_procedure: transformations that will perform when *load* the dataset
+        * post_procedure: transformations that will perform when *export* requested samples
     Options:
         * Mode
-
     Modes:
-        * all
-        * sample_id
-        * expr
-        * pheno
-
-
-
+        * 'all': export both raw and processed data, together with names/keys of cells
+        * 'key': export only names/keys of cells
+        * otherwise: export only processed data
     Transformations:
-        * ToTensor:
-        * ToOneHot: transform categorical data to one-hot encoding, an order of classes should be specified, otherwise
-                    will use sorted labels, assuming the range of labels are from input
-        * ToOrdinal:
-        * ToKBins:
-        * LogNormalize:
-    Gene expression matrix: rows are cells, columns are genes(Unlike rna_count, which directly accepts the Seurat compatible datasheets (i.e. row gene, col cell))
-    Phenotype matrix: rows are cells, columns are features
+        * ToTensor: convert input data into a PyTorch tensor; input type should be 'gene' or 'pheno'
+        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise
+                    will use sorted labels, assuming the range of labels is derived from input data
+        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned
+                     with a unique integer value, which can be useful for models that require numerical input
+        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features
+                   into categorical features
 
     """
 
@@ -68,6 +64,41 @@ class SCRNASeqCountDataDask(Dataset):
                  gene_meta_json_path=None, pheno_meta_json_path=None,
                  gene_meta=None, pheno_meta=None,
                  mode='all', verbose=False):
+        """
+        :param gene_csv_path:  Path to the gene csv file
+        :type gene_csv_path: str
+        :param pheno_csv_path: Path to the phenotype csv file
+        :type pheno_csv_path: str
+        :param gene_meta_json_path: Path to the genotype meta JSON file
+        :type gene_meta_json_path: str, optional
+        :param pheno_meta_json_path: Path to the phenotype meta JSON file
+        :type pheno_meta_json_path_path: str, optional
+        :param gene_meta*: A configuration dictionary related to gene data processing
+        :type gene_meta: dict[str, Any], optional
+        :param pheno_meta: A dictionary contains definition and configurations of phenotype data
+        :type pheno_meta: dict[str, Any], optional
+        :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
+        :type mode: str
+        :param verbose: Whether to enable verbose console logging, defaults to False
+        :type verbose: bool
+
+        .. note::
+            <gene_meta> example:
+            {
+                "all": {
+                    "gene_list": "*",
+                    "pre_procedure": [],
+                    'post_procedure': [
+                        {
+                            "type": "ToTensor"
+                        }
+                    ]
+                }
+            }
+            For more details of the JSON structure of <pheno_meta>, see :func:`utils.data_transformations`.
+            Also, for phenotype data without any NA values, passing <na_filter>=False can improve the performance
+            of reading a large file.
+        """
 
         # Verbose console logging
         self.verbose = verbose

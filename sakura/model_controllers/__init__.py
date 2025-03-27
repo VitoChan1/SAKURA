@@ -1,3 +1,3 @@
 """
-Miscellaneous Dataset Classes:
+Model controllers for managing model training workflows
 """

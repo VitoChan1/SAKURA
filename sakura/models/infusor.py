@@ -4,9 +4,8 @@
 
 class Infuser(torch.nn.Module):
     """
-    Imbue external information into embeddings.
+    To imbue external information into embeddings.
     Only main latent space will be generated.
-
     """
 
     def __init__(self):

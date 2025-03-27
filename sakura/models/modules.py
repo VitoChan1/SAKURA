@@ -1,11 +1,23 @@
 """
-    (to be implemented)
+Various model components
 """
 
 import torch.nn as nn
 
 
 def modulebuilder(cfg):
+    """
+    Builds neural network layers in sequential order based on configurations.
+
+    :param cfg: A list of module configuration dictionaries.
+    Each dict should contain key 'type' (str): Module type identifier. Supported types:
+        * 'Linear': Requires 'in_dim' and 'out_dim' keys
+        * 'Dropout': Optional 'p' key (default: 0.5)
+        * 'ReLU', 'CELU', 'Softmax', 'LogSoftmax': No additional params
+    :type cfg: list[dict]
+    :return: Ordered list of initialized PyTorch modules
+    :rtype: list[nn.Module]
+    """
     ret = list() #nn.ModuleList()
     cur_dim=cfg['in_dim']
     for cur_module in cfg:
@@ -26,18 +38,51 @@ def modulebuilder(cfg):
     return ret
 
 
-
-# class GELU(nn.Module):
-
-
 class FCDecoder(nn.Module):
+    """
+    Fully connected decoder module class.
+
+    Module supports configurable hidden layers and neurons,
+    various output activation functions, and dropout regularization.
+
+    Architecture details:
+        * When config is None: Default 3 hidden layers with structure:
+            Input → Linear → CELU → Linear → CELU → Linear → Output
+        * Hidden layer neurons can be uniform (single neuron count) or varied (list)
+        * Optional dropout placement after the input layer
+        * Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
+        * Final layer always has output_dim neurons with optional activation
+    """
     def __init__(self, input_dim, output_dim,
                  hidden_neurons=50, hidden_layers=3,
-                 output_activation_function='identity',
+                 output_activation_function='relu',
                  dropout=False,
                  dropout_input=False, dropout_input_p=0.5,
                  dropout_hidden=False, dropout_hidden_p=0.5,
                  config=None):
+        """
+        :param input_dim: The dimensionality of the input data
+        :type input_dim: int
+        :param output_dim: The dimensionality of the output data
+        :type input_dim: int
+        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
+        :type hidden_neurons: int or list[int]
+        :param hidden_layers: The number of layer(s) in the network, defaults to 3
+        :type hidden_layers: int
+        :param output_activation_function: The activation function for the output layer, defaults to 'relu'
+        :type output_activation_function: Literal['relu', 'softmax','identity']
+        :param dropout: Whether to apply dropout regularization, defaults to False
+        :type dropout: bool
+        :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+        :type dropout_input: bool
+        :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+        :type dropout_input_p: float
+        :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+        :type dropout_hidden: bool
+        :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+        :param config: A list of the module layer configuration dictionaries
+        :type config: list[dict],optional
+        """
         super(FCDecoder, self).__init__()
         self.model_list = nn.ModuleList()
         self.config = config
@@ -108,18 +153,60 @@ class FCDecoder(nn.Module):
             self.model_list = modulebuilder(config)
 
     def forward(self, x):
+        """
+        Sequentially forward through all modules in model_list to transform input tensor.
+
+        :param x: Input tensor, typically of shape [batch_size, ...]
+        :type x: torch.Tensor
+
+        :return: Transformed output after passing through all modules
+        :rtype: torch.Tensor
+        """
         for cur_model in self.model_list:
             x = cur_model(x)
         return x
 
 class FCPreEncoder(nn.Module):
-    # Input --> Linear --> CELU --> Linear --> CELU --> Output
+    """
+    Fully connected pre-encoder module class.
+
+    Module supports configurable hidden layers and neurons,
+    as well as dropout regularization.
+
+    Architecture details:
+        * When config is None: Default 2 hidden layers with structure:
+            Input → Linear → CELU → Linear → CELU → Output
+        * Hidden layer neurons can be uniform (single neuron count) or varied (list)
+        * Optional dropout placement after the input layer
+        * Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
+    """
     def __init__(self, input_dim: int, output_dim: int,
                  hidden_neurons=None, hidden_layers=2,
                  dropout=False,
                  dropout_input=False, dropout_input_p=0.5,
                  dropout_hidden=False, dropout_hidden_p=0.5,
                  config=None):
+        """
+        :param input_dim: The dimensionality of the input data
+        :type input_dim: int
+        :param output_dim: The dimensionality of the output data
+        :type input_dim: int
+        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
+        :type hidden_neurons: int or list[int]
+        :param hidden_layers: The number of layer(s) in the network, defaults to 2
+        :type hidden_layers: int
+        :param dropout: Whether to apply dropout regularization, defaults to False
+        :type dropout: bool
+        :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+        :type dropout_input: bool
+        :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+        :type dropout_input_p: float
+        :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+        :type dropout_hidden: bool
+        :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+        :param config: A list of the module layer configuration dictionaries
+        :type config: list[dict],optional
+        """
         super(FCPreEncoder, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -189,6 +276,15 @@ class FCPreEncoder(nn.Module):
         else:
             self.model_list = modulebuilder(self.config)
     def forward(self, x):
+        """
+        Sequentially forward through all modules in model_list to transform input tensor.
+
+        :param x: Input tensor, typically of shape [batch_size, ...]
+        :type x: torch.Tensor
+
+        :return: Transformed output after passing through all modules
+        :rtype: torch.Tensor
+        """
         for cur_model in self.model_list:
             x = cur_model(x)
         return x
@@ -196,7 +292,15 @@ class FCPreEncoder(nn.Module):
 
 class FCCompressor(nn.Module):
     """
-    Simply used to compress outputs from pre-encoder to a lower dimension
+    Fully connected compressor module class.
+
+    This module is designed to compress
+    outputs from pre-encoder to a lower dimensio with configurable hidden layers and neurons,
+    as well as dropout regularization.
+
+    Architecture details:
+        * Optional dropout placement after the input layer
+        * Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
     """
 
     def __init__(self, input_dim: int, output_dim: int,
@@ -205,6 +309,27 @@ class FCCompressor(nn.Module):
                  dropout_input=False, dropout_input_p=0.5,
                  dropout_hidden=False, dropout_hidden_p=0.5,
                  config=None):
+        """
+        :param input_dim: The dimensionality of the input data
+        :type input_dim: int
+        :param output_dim: The dimensionality of the output data
+        :type input_dim: int
+        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
+        :type hidden_neurons: int
+        :param hidden_layers: The number of layer(s) in the network, defaults to 1
+        :type hidden_layers: int
+        :param dropout: Whether to apply dropout regularization, defaults to False
+        :type dropout: bool
+        :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+        :type dropout_input: bool
+        :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+        :type dropout_input_p: float
+        :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+        :type dropout_hidden: bool
+        :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+        :param config: A list of the module layer configuration dictionaries
+        :type config: list[dict],optional
+        """
         super(FCCompressor, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -262,6 +387,15 @@ class FCCompressor(nn.Module):
             self.model_list=modulebuilder(self.config)
 
     def forward(self, x):
+        """
+        Sequentially forward through all modules in model_list to transform input tensor.
+
+        :param x: Input tensor, typically of shape [batch_size, ...]
+        :type x: torch.Tensor
+
+        :return: Transformed output after passing through all modules
+        :rtype: torch.Tensor
+        """
         for cur_model in self.model_list:
             x = cur_model(x)
         return x
@@ -269,6 +403,17 @@ class FCCompressor(nn.Module):
 
 class FCClassifier(nn.Module):
     """
+    Fully connected classifier module class.
+
+    Module is designed for supervising cell/sample labels
+    with configurable hidden layers and neurons, various, and dropout regularization
+    Use entire latent space as input, or designated dimension(s)
+    Training goal is to predict cell labels (e.g. cell type, group).
+
+    Architecture details:
+        * Optional dropout placement after the input layer
+        * Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
+
     Module used for supervising cell labels
     Use entire latent space as input, or designated dimension(s)
     Training goal is to predict cell labels (e.g. cell type, group)
@@ -370,6 +515,15 @@ class FCClassifier(nn.Module):
         self.model = nn.Sequential(self.model_list)
 
     def forward(self, x):
+        """
+        Sequentially forward through all modules in model_list to transform input tensor.
+
+        :param x: Input tensor, typically of shape [batch_size, ...]
+        :type x: torch.Tensor
+
+        :return: Transformed output after passing through all modules
+        :rtype: torch.Tensor
+        """
         for cur_model in self.model_list:
             x = cur_model(x)
         return x
@@ -503,6 +657,15 @@ class FCRegressor(nn.Module):
         self.model = nn.Sequential(self.model_list)
 
     def forward(self, x):
+        """
+        Sequentially forward through all modules in model_list to transform input tensor.
+
+        :param x: Input tensor, typically of shape [batch_size, ...]
+        :type x: torch.Tensor
+
+        :return: Transformed output after passing through all modules
+        :rtype: torch.Tensor
+        """
         for cur_model in self.model_list:
             x = cur_model(x)
         return x
@@ -535,7 +698,7 @@ class LinClassifier(nn.Module):
 class LinRegressor(nn.Module):
     """
     Use simple linear regressor to predict selected expression levels
-    Input is entire latent space, or designated deiension(s)
+    Input is entire latent space, or designated dimension(s)
     Expected to make latent space aligned along linear structure
     """
 
@@ -558,6 +721,15 @@ class LinRegressor(nn.Module):
             self.model_list = modulebuilder(self.config)
 
     def forward(self, x):
+        """
+        Sequentially forward through all modules in model_list to transform input tensor.
+
+        :param x: Input tensor, typically of shape [batch_size, ...]
+        :type x: torch.Tensor
+
+        :return: Transformed output after passing through all modules
+        :rtype: torch.Tensor
+        """
         for cur_model in self.model_list:
             x = cur_model(x)
         return x

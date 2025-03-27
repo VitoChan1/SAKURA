@@ -4,7 +4,7 @@
 
 class Mapper(torch.nn.Module):
     """
-    Perform constrained visualization.
+    To perform constrained visualization.
     A light autoencoder focusing on generating main latent space embeddings.
     """
 

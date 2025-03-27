@@ -1,3 +1,7 @@
+"""
+Multi-component model architecture assembler
+"""
+
 import torch
 
 import sakura.models.modules as model
@@ -5,15 +9,46 @@ import sakura.models.modules as model
 
 class Extractor(torch.nn.Module):
     """
-    Create extra dimensions correspoding to external information, along with main embeddings.
-    Each group of additional information will create new dimensions (latent spaces).
+    End-to-end multi-component model architecture assembler and forward orchestrator.
 
+    Despite the name 'Extractor', this class acts as the **central hub** that integrates
+    all submodules of SAKURA based on configurations. The name conceptually emphasis the
+    class role in extracting high-level representations through the assembled components
+    as dimensionality reduction being the main task.
+
+    Architecture Composition:
+        • pre_encoder (nn.Module): Raw input preprocessing/initial feature transformation
+        • main_latent_compressor (nn.Module): Core bottleneck for dimensionality reduction
+        • signature_latent_compressors (nn.ModuleDict): Task-specific latent extraction branch for signature analysis
+        • signature_regressors (nn.ModuleDict): Signature regression head
+        • pheno_latent_compressors (nn.ModuleDict): ask-specific latent extraction branch for phenotype analysis
+        • pheno_models (nn.ModuleDict): Phenotype prediction/regression head
+        • decoder (nn.Module): Reconstruction/upsampling component
+
+    Forward Flow:
+        1. <Input> → pre_encoder → <Pre-latent> → main_latent_compressor → <Main latent>
+        2. <Main latent> OR <Pre-latent> → parallel signature/pheno processing branches → parallel signature regressors and pheno_models
+        3. Main latent → decoder → final outputs
     """
 
     def __init__(self,
                  input_dim: int,
                  signature_config=None, pheno_config=None, main_lat_config=None,
                  pre_encoder_config=None, verbose=False):
+        """
+        :param input_dim: The dimensionality of the model inputs
+        :type input_dim: int
+        :param signature_config: Model configuration settings for the signature regression branch
+        :type signature_config: dict[str, Any], optional
+        :param pheno_config: Model configuration settings for the phenotype prediction/regression branch
+        :type pheno_config: dict[str, Any], optional
+        :param main_lat_config: Model configuration settings for the main latent representation of the autoencoder backbone
+        :type main_lat_config: dict[str, Any]
+        :param pre_encoder_config: Model configuration settings for the pre-encoder stage
+        :type pre_encoder_config: dict[str, Any], optional
+        :param verbose: Whether to enable verbose console logging, defaults to False
+        :type verbose: bool
+        """
         super(Extractor, self).__init__()
 
         # Verbose logging for debugging
@@ -238,21 +273,40 @@ class Extractor(torch.nn.Module):
                 forward_main_latent=True, forward_reconstruction=True,
                 detach=False, detach_from=''):
         """
-        Forward extractor framework.
-        GRL- and GNL-related computations are done in the ExtractorController
-        :param batch: (torch.Tensor) gene expression tensors, shape should be (N,M), where N is number of cell, M is number of gene
-        :param forward_signature: (bool) should signature supervision part be forwarded
-        :param selected_signature: (list or None) list of selected signatures to be forwarded, None to forward all signatures
-        :param forward_pheno: (bool) should phenotype supervision part be forwarded
-        :param selected_pheno: (list or None) list of selected phenotypes to be forwarded, None to forward all phenotypes
-        :param forward_main_latent: (bool) should main latent part be forwarded
-        :param forward_reconstruction: (bool) should decoder be forwarded (decoder could be forwarded only when all latent dimensions are forwarded)
+        Forward extractor framework with control over computation branches.
 
-        :param detach_grad: (bool) should the gradient be blocked from the midway of the network
-        :param detach_grad_from: (bool) from which the gradient should be blocked: pre_encoder (lat_pre will be detached, pre_encoder will not be trained),
-         encoder (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
+        Orchestrates data flow through the assembled modular architecture, enabling selective
+        activation of task branches and gradient flow control.
+        Gradient reverse layer and gradient neutralize layer related computations are done
+        in :mod:`model_controllers.extractor_controller`.
 
-        :return: a dictionary containing results of forwarding
+        :param batch: Gene expression tensors, shape should be (N,M), where N is number of cell, M is number of gene
+        :type batch: torch.Tensor
+        :param forward_signature: Whether to forward signature supervision part, defaults to True
+        :type forward_signature: bool
+        :param selected_signature: List of selected signatures to be forwarded, None to forward all signatures
+        :type selected_signature: list[str], optional
+        :param forward_pheno: Whether to forward phenotype supervision part, defaults to True
+        :type forward_pheno: bool
+        :param selected_pheno: List of selected phenotypes to be forwarded, None to forward all phenotypes
+        :type selected_pheno: list[str], optional
+        :param forward_main_latent: Whether to forward main latent part, defaults to True
+        :type forward_main_latent: bool
+        :param forward_reconstruction*: Whether to forward decoder reconstruction part, defaults to True
+        (decoder could only be forwarded when all latent dimensions are forwarded)
+        :type forward_reconstruction: bool
+        :param detach: Should the gradient be blocked from midway of the network as specified in <detach_from>, defaults to False
+        :type detach: bool
+        :param detach_from: Specific component from which the gradient should be blocked if <detach> is True, can be
+            * 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained); OR
+            * 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
+        :type detach_from: Literal['pre_encoder', 'encoder'] or str
+
+        :return: a dictionary containing hierarchical outputs with keys of model forwarding
+        :rtype: dict[str, torch.Tensor]
+
+        .. note::
+            The decoder reconstruction part could only be forwarded when all latent dimensions are forwarded.
         """
         # Forward Pre Encoder
         lat_pre = self.model['pre_encoder'](batch)

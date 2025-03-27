@@ -1,3 +1,3 @@
 """
-Miscellaneous Dataset Classes:
+Core neural network components and model architectures of SAKURA
 """

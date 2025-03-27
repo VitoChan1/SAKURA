@@ -1,3 +1,3 @@
 """
-Miscellaneous dataset classes
+Versions of classes for SAKURA inputs
 """
