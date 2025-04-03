@@ -3,7 +3,6 @@ Sparse version of scRNA-seq count data
 """
 
 import json
-
 import numpy
 import numpy as np
 import pandas as pd
@@ -11,7 +10,6 @@ import scipy
 import scipy.io
 import scipy.sparse
 from torch.utils.data import Dataset
-
 from sakura.utils.data_transformations import ToBinary
 from sakura.utils.data_transformations import ToKBins
 # Transformations

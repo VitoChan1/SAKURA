@@ -3,17 +3,14 @@ Dask version of scRNA-seq count data
 """
 
 import json
-
 import dask.dataframe as dd
 import pandas as pd
 from torch.utils.data import Dataset
-
 from sakura.utils.data_transformations import ToKBins
 # Transformations
 from sakura.utils.data_transformations import ToOnehot
 from sakura.utils.data_transformations import ToOrdinal
 from sakura.utils.data_transformations import ToTensor
-
 
 class SCRNASeqCountDataDask(Dataset):
     """
@@ -26,7 +23,7 @@ class SCRNASeqCountDataDask(Dataset):
     gene_csv:
         * Assuming rows are cells (or samples), columns are genes
         * rownames are sample identifiers (cell names)
-        * colnames are gene identifiers (gene names, or nsembl IDs)
+        * colnames are gene identifiers (gene names, or Ensembl IDs)
     genotype_meta_csv:
         * A JSON file related to gene data processing
         * pre_procedure: transformations that will perform when *load* the dataset
@@ -41,19 +38,15 @@ class SCRNASeqCountDataDask(Dataset):
         * The 'categorical' range: array of possible values, *ordered*
         * pre_procedure: transformations that will perform when *load* the dataset
         * post_procedure: transformations that will perform when *export* requested samples
-        
     Modes:
         * 'all': export both raw and processed data, together with names/keys of cells
         * 'key': export only names/keys of cells
         * otherwise: export only processed data
     Transformations:
         * ToTensor: convert input data into a PyTorch tensor; input type should be 'gene' or 'pheno'
-        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise
-        will use sorted labels, assuming the range of labels is derived from input data
-        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned
-        with a unique integer value, which can be useful for models that require numerical input
-        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features
-        into categorical features
+        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise will use sorted labels, assuming the range of labels is derived from input data
+        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned with a unique integer value, which can be useful for models that require numerical input
+        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features into categorical features
 
     """
 

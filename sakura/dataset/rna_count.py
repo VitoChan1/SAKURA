@@ -6,8 +6,8 @@ import json
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
-# Transformations
 from sakura.utils.data_transformations import ToKBins
+# Transformations
 from sakura.utils.data_transformations import ToOnehot
 from sakura.utils.data_transformations import ToOrdinal
 from sakura.utils.data_transformations import ToTensor
