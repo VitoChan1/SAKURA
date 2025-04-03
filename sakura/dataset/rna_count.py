@@ -31,27 +31,21 @@ class SCRNASeqCountData(Dataset):
         * Assuming rows are samples, columns are metadata contents
         * rownames are sample identifiers (cell names)
     phenotype_meta_csv:
-        * A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations
-        for SAKURA model training
+        * A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations for SAKURA model training
         * Storage entity is a dict
         * Type: 'categorical', 'numeric', 'ordinal' (tbd)
         * For 'categorical' range: array of possible values, *ordered*
         * pre_procedure: transformations that will perform when *load* the dataset
         * post_procedure: transformations that will perform when *export* requested samples
-    Options:
-        * Mode
     Modes:
         * 'all': export both raw and processed data, together with names/keys of cells
         * 'key': export only names/keys of cells
         * otherwise: export only processed data
     Transformations:
         * ToTensor: convert input data into a PyTorch tensor; input type should be 'gene' or 'pheno'
-        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise
-                    will use sorted labels, assuming the range of labels is derived from input data
-        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned
-                     with a unique integer value, which can be useful for models that require numerical input
-        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features
-                   into categorical features
+        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise will use sorted labels, assuming the range of labels is derived from input data
+        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned with a unique integer value, which can be useful for models that require numerical input
+        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features into categorical features
 
     .. note::
         For more details of the transformations, see :func:`utils.data_transformations`.
