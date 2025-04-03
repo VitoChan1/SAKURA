@@ -3,13 +3,11 @@ General scRNA-Seq count dataset
 """
 
 import json
-
 import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
-
-from sakura.utils.data_transformations import ToKBins
 # Transformations
+from sakura.utils.data_transformations import ToKBins
 from sakura.utils.data_transformations import ToOnehot
 from sakura.utils.data_transformations import ToOrdinal
 from sakura.utils.data_transformations import ToTensor
@@ -20,6 +18,7 @@ class SCRNASeqCountData(Dataset):
     General scRNA-Seq count dataset class for SAKURA inputs.
 
     Expected inputs:
+
     gene_csv:
         * Assuming rows are genes, columns are samples (or cells)
         * rownames are gene identifiers (gene names, or Ensembl IDs)
@@ -36,8 +35,7 @@ class SCRNASeqCountData(Dataset):
         for SAKURA model training
         * Storage entity is a dict
         * Type: 'categorical', 'numeric', 'ordinal' (tbd)
-        * For 'categorical':
-            * Range: array of possible values, *ordered*
+        * For 'categorical' range: array of possible values, *ordered*
         * pre_procedure: transformations that will perform when *load* the dataset
         * post_procedure: transformations that will perform when *export* requested samples
     Options:
@@ -102,7 +100,6 @@ class SCRNASeqCountData(Dataset):
             <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
             <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can improve the performance
             of reading a large file.
-
         """
 
         # Verbose console logging

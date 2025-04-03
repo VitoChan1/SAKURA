@@ -2,6 +2,8 @@
     (to be implemented)
 """
 
+import torch
+
 class Infuser(torch.nn.Module):
     """
     To imbue external information into embeddings.

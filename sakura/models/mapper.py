@@ -2,6 +2,8 @@
     (to be implemented)
 """
 
+import torch
+
 class Mapper(torch.nn.Module):
     """
     To perform constrained visualization.
