@@ -24,10 +24,12 @@ class SCRNASeqCountDataSparse(Dataset):
 
     Accepts matrixMM (could be dgcmatrix in R) as data contained (will still load everything into memory, but using sparse matrix now).
 
-    Expected inputs:
+    *Expected inputs:*
+
     gene_MM: gene expression matrix MM .mtx file
     gene_name_csv: gene identifiers (gene names, or Ensembl IDs) of the gene expression matrix
     cell_name_csv: cell names (or sample identifiers) of the gene expression matrix
+    
     genotype_meta_csv:
         * A JSON file related to gene data processing
         * pre_procedure: transformations that will perform when *load* the dataset
@@ -44,8 +46,6 @@ class SCRNASeqCountDataSparse(Dataset):
             * Range: array of possible values, *ordered*
         * pre_procedure: transformations that will perform when *load* the dataset
         * post_procedure: transformations that will perform when *export* requested samples
-    Options:
-        * Mode
     Modes:
         * 'all': export both raw and processed data, together with names/keys of cells
         * 'key': export only names/keys of cells

@@ -17,7 +17,7 @@ class SCRNASeqCountData(Dataset):
     """
     General scRNA-Seq count dataset class for SAKURA inputs.
 
-    Expected inputs:
+    *Expected inputs:*
 
     gene_csv:
         * Assuming rows are genes, columns are samples (or cells)
