@@ -20,6 +20,7 @@ class SCRNASeqCountDataDask(Dataset):
 
     Expected inputs:
     Unlike rna_count, which directly accepts the Seurat compatible datasheets (i.e. row gene, col cell)
+
     gene_csv:
         * Assuming rows are cells (or samples), columns are genes
         * rownames are sample identifiers (cell names)
