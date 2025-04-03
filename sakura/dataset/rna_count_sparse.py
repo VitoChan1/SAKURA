@@ -24,12 +24,12 @@ class SCRNASeqCountDataSparse(Dataset):
 
     Accepts matrixMM (could be dgcmatrix in R) as data contained (will still load everything into memory, but using sparse matrix now).
 
-    *Expected inputs:*
+    **Expected inputs:**
 
     gene_MM: gene expression matrix MM .mtx file
     gene_name_csv: gene identifiers (gene names, or Ensembl IDs) of the gene expression matrix
     cell_name_csv: cell names (or sample identifiers) of the gene expression matrix
-    
+
     genotype_meta_csv:
         * A JSON file related to gene data processing
         * pre_procedure: transformations that will perform when *load* the dataset
@@ -38,12 +38,10 @@ class SCRNASeqCountDataSparse(Dataset):
         * Assuming rows are samples, columns are metadata contents
         * rownames are sample identifiers (cell names)
     phenotype_meta_csv:
-        * A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations
-        for SAKURA model training
+        * A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations for SAKURA model training
         * Storage entity is a dict
         * Type: 'categorical', 'numeric', 'ordinal' (tbd)
-        * For 'categorical':
-            * Range: array of possible values, *ordered*
+        * The 'categorical' range: array of possible values, *ordered*
         * pre_procedure: transformations that will perform when *load* the dataset
         * post_procedure: transformations that will perform when *export* requested samples
     Modes:
@@ -52,12 +50,9 @@ class SCRNASeqCountDataSparse(Dataset):
         * otherwise: export only processed data
     Transformations:
         * ToTensor: convert input data into a PyTorch tensor; input type should be 'gene' or 'pheno'
-        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise
-                    will use sorted labels, assuming the range of labels is derived from input data
-        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned
-                     with a unique integer value, which can be useful for models that require numerical input
-        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features
-                   into categorical features
+        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise will use sorted labels, assuming the range of labels is derived from input data
+        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned with a unique integer value, which can be useful for models that require numerical input
+        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features into categorical features
 
     .. note::
         For more details of the transformations, see :func:`utils.data_transformations`.

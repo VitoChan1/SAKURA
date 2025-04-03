@@ -18,7 +18,7 @@ class SCRNASeqCountDataDask(Dataset):
 
     This class fits for dataset with a very large number of cells.
 
-    *Expected inputs:*
+    **Expected inputs:**
     Unlike rna_count, which directly accepts the Seurat compatible datasheets (i.e. row gene, col cell)
 
     gene_csv:
