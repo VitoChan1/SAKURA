@@ -6,7 +6,8 @@ import torch
 
 class Mapper(torch.nn.Module):
     """
-    To perform constrained visualization.
+    Perform constrained visualization
+
     A light autoencoder focusing on generating main latent space embeddings.
     """
 

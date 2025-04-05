@@ -15,7 +15,7 @@ from sakura.utils.data_transformations import ToTensor
 
 class SCRNASeqCountData(Dataset):
     """
-    General scRNA-Seq count dataset class for SAKURA inputs.
+    General scRNA-Seq count dataset class for SAKURA inputs
 
     **Expected inputs:**
 
@@ -65,9 +65,11 @@ class SCRNASeqCountData(Dataset):
         :type gene_meta_json_path: str, optional
         :param pheno_meta_json_path: Path to the phenotype meta JSON file
         :type pheno_meta_json_path: str, optional
-        :param pheno_df_dtype: Pandas dtype applied to phenotype data, either the whole dataframe or individual columns
+        :param pheno_df_dtype: Pandas dtype applied to phenotype data,
+            either the whole dataframe or individual columns
         :type pheno_df_dtype: dtype or dict of {Hashable dtype}, optional
-        :param pheno_df_na_filter*: Detect missing value markers (empty strings and the value of na_values), defaults to True
+        :param pheno_df_na_filter*: Detect missing value markers
+            (empty strings and the value of na_values), defaults to True
         :type pheno_df_na_filter: bool
         :param gene_meta*: A configuration dictionary related to gene data processing
         :type gene_meta: dict[str, Any], optional
@@ -92,8 +94,8 @@ class SCRNASeqCountData(Dataset):
                 }
             }
             <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
-            <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can improve the performance
-            of reading a large file.
+            <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+                improve the performance of reading a large file.
         """
 
         # Verbose console logging

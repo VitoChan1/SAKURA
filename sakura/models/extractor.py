@@ -9,7 +9,7 @@ import sakura.models.modules as model
 
 class Extractor(torch.nn.Module):
     """
-    End-to-end multi-component model architecture assembler and forward orchestrator.
+    End-to-end multi-component model architecture assembler and forward orchestrator
 
     Despite the name 'Extractor', this class acts as the **central hub** that integrates
     all submodules of SAKURA based on configurations. The name conceptually emphasis the
@@ -273,12 +273,15 @@ class Extractor(torch.nn.Module):
                 forward_main_latent=True, forward_reconstruction=True,
                 detach=False, detach_from=''):
         """
-        Forward extractor framework with control over computation branches.
+        Forward extractor framework with control over computation branches
 
         Orchestrates data flow through the assembled modular architecture, enabling selective
         activation of task branches and gradient flow control.
-        Gradient reverse layer and gradient neutralize layer related computations are done
+        **Gradient reverse layer** and **gradient neutralize layer** related computations are done
         in :mod:`model_controllers.extractor_controller`.
+        Gradient backpropagation detachment:
+            • 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained); OR
+            • 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
 
         :param batch: Gene expression tensors, shape should be (N,M), where N is number of cell, M is number of gene
         :type batch: torch.Tensor
@@ -293,13 +296,10 @@ class Extractor(torch.nn.Module):
         :param forward_main_latent: Whether to forward main latent part, defaults to True
         :type forward_main_latent: bool
         :param forward_reconstruction*: Whether to forward decoder reconstruction part, defaults to True
-        (decoder could only be forwarded when all latent dimensions are forwarded)
         :type forward_reconstruction: bool
         :param detach: Should the gradient be blocked from midway of the network as specified in <detach_from>, defaults to False
         :type detach: bool
-        :param detach_from: Specific component from which the gradient should be blocked if <detach> is True, can be
-            * 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained); OR
-            * 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
+        :param detach_from: Specific component from which the gradient should be blocked if <detach> is True
         :type detach_from: Literal['pre_encoder', 'encoder'] or str
 
         :return: a dictionary containing hierarchical outputs with keys of model forwarding

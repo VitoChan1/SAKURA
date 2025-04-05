@@ -14,7 +14,7 @@ from sakura.utils.data_transformations import ToTensor
 
 class SCRNASeqCountDataDask(Dataset):
     """
-    Dask version of scRNA-seq count dataset class for SAKURA inputs.
+    Dask version of scRNA-seq count dataset class for SAKURA inputs
 
     This class fits for dataset with a very large number of cells.
 

@@ -20,15 +20,17 @@ from sakura.utils.data_transformations import ToTensor
 
 class SCRNASeqCountDataSparse(Dataset):
     """
-    Sparse version of scRNA-Seq count dataset class for SAKURA inputs.
+    Sparse version of scRNA-Seq count dataset class for SAKURA inputs
 
     Accepts matrixMM (could be dgcmatrix in R) as data contained (will still load everything into memory, but using sparse matrix now).
 
     **Expected inputs:**
 
-    gene_MM: gene expression matrix MM .mtx file
-    gene_name_csv: gene identifiers (gene names, or Ensembl IDs) of the gene expression matrix
-    cell_name_csv: cell names (or sample identifiers) of the gene expression matrix
+    **gene_MM:** gene expression matrix MM .mtx file
+
+    **gene_name_csv:** gene identifiers (gene names, or Ensembl IDs) of the gene expression matrix
+
+    **cell_name_csv:** cell names (or sample identifiers) of the gene expression matrix
 
     genotype_meta_csv:
         * A JSON file related to gene data processing

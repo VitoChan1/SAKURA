@@ -50,7 +50,7 @@ def parse_args():
 
 class sakuraAE(object):
     """
-    A comprehensive class for SAKURA pipeline.
+    A comprehensive class for SAKURA pipeline
 
     This class manages overall workflow of SAKURA includeing model initialization, training, testing, and model inference or external model merging
     based on the configuration and argument settings.
@@ -838,7 +838,7 @@ class sakuraAE(object):
                      hybrid_mode='interleave',
                      prog_loss_weight_mode='epoch_end',
                      make_logs=True, log_prefix='', log_loss_groups=['loss', 'regularization'], save_raw_loss=False,
-                     perform_test=False, test_segmant=2000, tests: dict = None,
+                     perform_test=False, test_segment=2000, tests: dict = None,
                      perform_checkpoint=False, checkpoint_segment=2000, checkpoint_prefix='', checkpoint_save_arch=False,
                      loss_prog_on_test: dict = None,
                      resume=False, resume_dict=None):
@@ -866,9 +866,9 @@ class sakuraAE(object):
         :type log_loss_groups: list[str]
         :param save_raw_loss: Whether to record raw losses, defaults to False
         :type save_raw_loss: bool
-        :param perform_test: Whether to perform testing during training at specified <test_segmant> intervals, defaults to False
+        :param perform_test: Whether to perform testing during training at specified <test_segment> intervals, defaults to False
         :type perform_test: bool
-        :param test_segmant: Tick interval at which testing is performed, defaults to 2000
+        :param test_segment: Tick interval at which testing is performed, defaults to 2000
         :type test_segment: int
         :param tests: A list of test configuration dictionaries, where each dictionary
             should contain keys: 'on_split', 'make_logs', 'dump_latent' and 'latent_prefix'
@@ -1010,7 +1010,7 @@ class sakuraAE(object):
                 resume_dict['split_iters'] = split_iters
 
                 # Test
-                if perform_test and cur_tick % test_segmant == 0:
+                if perform_test and cur_tick % test_segment == 0:
                     # Perform test
                     for cur_test in tests:
                         # When test, all latents will be evaluated
@@ -1131,7 +1131,7 @@ class sakuraAE(object):
                 resume_dict['split_iters'] = split_iters
 
                 # Test
-                if perform_test and cur_tick % test_segmant == 0:
+                if perform_test and cur_tick % test_segment == 0:
                     # Perform test
                     for cur_test in tests:
                         # When test, all latents will be evaluated
@@ -1164,7 +1164,7 @@ class sakuraAE(object):
                              hybrid_mode='interleave',
                              prog_loss_weight_mode='epoch_end',
                              make_logs=True, log_prefix='', log_loss_groups=['loss', 'regularization'], save_raw_loss=False,
-                             perform_test=False, test_segmant=2000, tests: dict = None,
+                             perform_test=False, test_segment=2000, tests: dict = None,
                              perform_checkpoint=False, checkpoint_segment=2000, checkpoint_prefix='', checkpoint_save_arch=False,
                              loss_prog_on_test: dict = None,
                              resume=False, resume_dict=None,
@@ -1336,7 +1336,7 @@ class sakuraAE(object):
 
 
                 # Test
-                if perform_test and cur_tick % test_segmant == 0:
+                if perform_test and cur_tick % test_segment == 0:
                     # Before performing test, turn dataset to full mode
                     self.count_data.mode = 'all'
                     # Perform test
@@ -1570,7 +1570,7 @@ class sakuraAE(object):
                                   log_prefix=cur_story_item.get('log_prefix', ''),
                                   log_loss_groups=cur_story_item.get('log_loss_groups', ['loss', 'regularization']),
                                   perform_test=(cur_story_item.get('perform_test') == 'True'),
-                                  test_segmant=cur_story_item.get('test_segment'),
+                                  test_segment=cur_story_item.get('test_segment'),
                                   tests=cur_story_item.get('tests'),
                                   loss_prog_on_test=cur_story_item.get('loss_prog_on_test'),
                                   perform_checkpoint=(cur_story_item.get('perform_checkpoint') == 'True'),
@@ -1605,7 +1605,7 @@ class sakuraAE(object):
                                   log_prefix=cur_story_item.get('log_prefix', ''),
                                   log_loss_groups=cur_story_item.get('log_loss_groups', ['loss', 'regularization']),
                                   perform_test=(cur_story_item.get('perform_test') == 'True'),
-                                  test_segmant=cur_story_item.get('test_segment'),
+                                  test_segment=cur_story_item.get('test_segment'),
                                   tests=cur_story_item.get('tests'),
                                   loss_prog_on_test=cur_story_item.get('loss_prog_on_test'),
                                   perform_checkpoint=(cur_story_item.get('perform_checkpoint') == 'True'),
@@ -1630,7 +1630,7 @@ class sakuraAE(object):
         """
         Insert an external module and merge it with SAKURA model.
 
-        :param insert_config*: A configuration dictionary defining how to load and integrate the external module(s).
+        :param insert_config*: A configuration dictionary defining how to load and integrate the external module(s)
         :type insert_config: dict[str, Any]
         :param verbose: Whether to enable verbose console logging, defaults to True
         :type verbose: bool
@@ -1638,8 +1638,7 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-            Expected <insert_config> structure:
-            {
+            Expected <insert_config> structure:{
                 'module_name': {
                     "ext_model_config_path": (str) - Path to the external model's architecture config (JSON)
                     "ext_signature_config_path": (str) - Path to the signature config (JSON)
@@ -1649,8 +1648,8 @@ class sakuraAE(object):
                     "source_name": (Optional[str]) - Name of the specific component (if applicable)
                     "destination_type": (str) - Target component type in the current model  (e.g., "decoder", "pheno", "signature")
                     "destination_name": (Optional[str]) - Name of the target component (if applicable)
+                    }
                 }
-            }
         """
         if verbose:
             logger.debug('Inserting external modules...')
