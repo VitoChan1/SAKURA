@@ -86,9 +86,11 @@ class SCRNASeqCountDataDask(Dataset):
                     ]
                 }
             }
-            For more details of the JSON structure of <pheno_meta>, see :func:`utils.data_transformations`.
-            Also, for phenotype data without any NA values, passing <na_filter>=False can improve the performance
-            of reading a large file.
+
+            <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
+
+            <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+            improve the performance of reading a large file.
         """
 
         # Verbose console logging

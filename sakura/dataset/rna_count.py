@@ -74,16 +74,17 @@ class SCRNASeqCountData(Dataset):
         For more details of the transformations, see :func:`utils.data_transformations`.
 
         <gene_meta> example:
-        {
-            'all': {
-                'gene_list': "*",
-                'pre_procedure': [],
-                'post_procedure': [{
-                'type': "ToTensor"
-                }]
+        ```
+            {
+                'all': {
+                    'gene_list': "*",
+                    'pre_procedure': [],
+                    'post_procedure': [{
+                    'type': "ToTensor"
+                    }]
+                }
             }
-        }
-
+        ```
         <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
 
         <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
