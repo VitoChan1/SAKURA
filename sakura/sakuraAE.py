@@ -55,26 +55,20 @@ class sakuraAE(object):
     This class manages overall workflow of SAKURA includeing model initialization, training, testing, and model inference or external model merging
     based on the configuration and argument settings.
 
-
+    :param config_json_path: Path to the configuration JSON file, which contains
+        all the necessary settings for the class
+    :type config_json_path: str
+    :param verbose: Whether to enable verbose console logging, defaults to False
+    :type verbose: bool
+    :param suppress_train: Whether to suppress model training, only setup dataset and model, defaults to False
+    :type suppress_train: bool
+    :param suppress_tensorboardX: Whether to suppress Logger to initiate tensorboardX
+        (to prevent flushing logs), defaults to False
+    :type suppress_tensorboardX: bool
     """
 
     def __init__(self, config_json_path, verbose=False,
                  suppress_train=False, suppress_tensorboardX=False):
-        """
-        Initialize an sakuraAE pipeline instance.
-
-        :param config_json_path: Path to the configuration JSON file, which contains
-            all the necessary settings for the class
-        :type config_json_path: str
-        :param verbose: Whether to enable verbose console logging, defaults to False
-        :type verbose: bool
-        :param suppress_train: Whether to suppress model training, only setup dataset and model, defaults to False
-        :type suppress_train: bool
-        :param suppress_tensorboardX: Whether to suppress Logger to initiate tensorboardX
-            (to prevent flushing logs), defaults to False
-        :type suppress_tensorboardX: bool
-        """
-
         # Read configurations for arguments
         with open(config_json_path, 'r') as f:
             self.config = json.load(f)

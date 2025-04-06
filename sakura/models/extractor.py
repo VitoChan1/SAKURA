@@ -277,8 +277,7 @@ class Extractor(torch.nn.Module):
 
         Orchestrates data flow through the assembled modular architecture, enabling selective
         activation of task branches and gradient flow control.
-        **Gradient reverse layer** and **gradient neutralize layer** related computations are done
-        in :mod:`model_controllers.extractor_controller`.
+
         Gradient backpropagation detachment:
             • 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained); OR
             • 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
@@ -306,7 +305,9 @@ class Extractor(torch.nn.Module):
         :rtype: dict[str, torch.Tensor]
 
         .. note::
-            The decoder reconstruction part could only be forwarded when all latent dimensions are forwarded.
+            <forward_reconstruction>: The decoder reconstruction part could only be forwarded when all latent dimensions are forwarded.
+            **Gradient reverse layer** and **gradient neutralize layer** related computations are done
+            in :mod:`model_controllers.extractor_controller`.
         """
         # Forward Pre Encoder
         lat_pre = self.model['pre_encoder'](batch)
