@@ -496,10 +496,12 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-            The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
+            The selected_pheno (selected signature) should be configured and stored
+            in self.selected_pheno (self.selected_signature).
             If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
             which means that all selected phenotypes (or signatures) will be trained.
-            This feature is designed for complex training scenarios where the neural network (NN) is partially forwarded.
+            This feature is designed for complex training scenarios where the neural network (NN)
+            is partially forwarded.
         """
 
         # Argument checks
@@ -712,7 +714,7 @@ class sakuraAE(object):
         :type log_loss_groups: list[str]
         :param dump_latent: Should all latent space representations be dumped after each batch, defaults to True
             (only cells within the split will be dumped)
-        :tupe dump_latent: bool
+        :type dump_latent: bool
         :param latent_prefix: Prefix to be added after <log_prefix> to latent embedding filename
         :type latent_prefix: str
         :param dump_pre_encoder_output: Whether to dump output of the pre-encoder module, defaults to False
@@ -734,10 +736,12 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-            The selected_pheno (selected signature) should be configured and stored in self.selected_pheno (self.selected_signature).
+            The selected_pheno (selected signature) should be configured and
+            stored in self.selected_pheno (self.selected_signature).
             If it is set to None, self.selected_pheno (self.selected_signature) will act as the default,
             which means that all selected phenotypes (or signatures) will be tested.
-            This feature is designed for complex testing scenarios where the computation model is partially forwarded (i.e. some of the forward flags being set to False).
+            This feature is designed for complex testing scenarios where the computation model
+            is partially forwarded (i.e. some of the forward flags being set to False).
         """
 
         selected_split_mask = self.splits[split_id]
@@ -860,7 +864,8 @@ class sakuraAE(object):
         :type log_loss_groups: list[str]
         :param save_raw_loss: Whether to record raw losses, defaults to False
         :type save_raw_loss: bool
-        :param perform_test: Whether to perform testing during training at specified <test_segment> intervals, defaults to False
+        :param perform_test: Whether to perform testing during training at specified
+            <test_segment> intervals, defaults to False
         :type perform_test: bool
         :param test_segment: Tick interval at which testing is performed, defaults to 2000
         :type test_segment: int
@@ -875,8 +880,9 @@ class sakuraAE(object):
         :type checkpoint_prefix: str
         :param checkpoint_save_arch: Should model architecture be checkpointed, defaults to False
         :type checkpoint_save_arch: bool
-        :param loss_prog_on_test: A dictionary specifying progressive loss weights to use during testing when prog_loss_weight_mode is 'on_test'.
-            should contain keys: 'prog_main','train_pheno','selected_pheno','train_signature' and 'selected_signature'
+        :param loss_prog_on_test: A dictionary specifying progressive loss weights to use
+            during testing when prog_loss_weight_mode is 'on_test', should contain keys:
+            'prog_main','train_pheno','selected_pheno','train_signature' and 'selected_signature'
         :type loss_prog_on_test: dict[str, Any], optional
         :param resume: Whether to resume from saved training session, defaults to False
         :type resume: bool
@@ -886,7 +892,8 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-            When epoch loss progressing is on, the progression will incur only for selected loss when an epoch ends (tick reach end).
+            When epoch loss progressing is on, the progression will incur only
+            for selected loss when an epoch ends (tick reach end).
         """
         split_configs = self.__lint_split_configs(split_configs)
 
@@ -1164,7 +1171,8 @@ class sakuraAE(object):
                              resume=False, resume_dict=None,
                              prefetch_strategy='reuse', reuse_factor=8, reuse_shuffle_when_reassign=False):
         """
-        Implement the multithread dataloader version of hybrid mode training, where model module splits are trained as configured.
+        Implement the multithread dataloader version of hybrid mode training,
+        where model module splits are trained as configured.
 
         :param prefetch_strategy: The strategy for prefetching data in the multithread dataloader,
             defaults to 'reuse' sets of loaded data batches to reduce I/O overhead
@@ -1371,8 +1379,8 @@ class sakuraAE(object):
         """
         Save the current state of the model and training process as a checkpoint.
 
-        :param training_state: A dictionary containing the current state of the training process，which may include
-            the current tick number, epoch number, data sampler status, etc.
+        :param training_state: A dictionary containing the current state of the training process，
+            which may include the current tick number, epoch number, data sampler status, etc.
         :type training_state: dict[str, Any]
         :param checkpoint_path: File path where the checkpoint will be saved
         :type checkpoint_path: str
@@ -1398,7 +1406,8 @@ class sakuraAE(object):
 
     def load_checkpoint(self, checkpoint_path):
         """
-        Load a checkpoint file and resume the model's state, including parameters, random states, training progress, etc.
+        Load a checkpoint file and resume the model's state,
+        including parameters, random states, training progress, etc.
 
         :param checkpoint_path: File path of the checkpoint to load
         :type checkpoint_path: str
@@ -1420,8 +1429,8 @@ class sakuraAE(object):
         """
         Perform inference on the given tasks represented as a list of stories.
 
-        :param story: A list of dictionaries representing the story elements, should contain an <action> key defaults to 'test',
-            as well as other testing setting keys.
+        :param story: A list of dictionaries representing the story elements,
+            should contain an <action> key defaults to 'test', as well as other testing setting keys.
         :type story: list[dict[str, Any]]
 
         :return: None
@@ -1464,8 +1473,8 @@ class sakuraAE(object):
         :param story: A list of dictionaries should contain the necessary information for training and/or testing,
             such as hyperparameters, task-specific configurations and checkpoint settings.
         :type story: list[dict[str, Any]]
-        :param resume: Whether to resume training from a previous state using the information provided in
-                   <resume_dict>, defaults to False
+        :param resume: Whether to resume training from a previous state using the information
+            provided in <resume_dict>, defaults to False
         :type resume: bool
         :param resume_dict: A dictionary containing the state information needed to resume training
         :type resume_dict: dict[str, Any], optional
@@ -1473,8 +1482,8 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-            See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload` for details on configurations of
-            different tasks.
+            See also :func:`train`, :func:`test`, :func:`train_hybrid` and :func:`train_hybrid_fastload`
+            for details on configurations of different tasks.
         """
         # Handle resume
         cur_story_item_idx = 0
@@ -1624,7 +1633,8 @@ class sakuraAE(object):
         """
         Insert an external module and merge it with SAKURA model.
 
-        :param insert_config*: A configuration dictionary defining how to load and integrate the external module(s)
+        :param insert_config*: A configuration dictionary defining how to load
+            and integrate the external module(s)
         :type insert_config: dict[str, Any]
         :param verbose: Whether to enable verbose console logging, defaults to True
         :type verbose: bool

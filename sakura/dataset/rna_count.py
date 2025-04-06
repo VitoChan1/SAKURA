@@ -20,68 +20,60 @@ class SCRNASeqCountData(Dataset):
     **Expected inputs:**
 
     gene_csv:
-        * Assuming rows are genes, columns are samples (or cells)
-        * rownames are gene identifiers (gene names, or Ensembl IDs)
-        * colnames are sample identifiers (cell names)
+        • Assuming rows are genes, columns are samples (or cells)
+        • rownames are gene identifiers (gene names, or Ensembl IDs)
+        • colnames are sample identifiers (cell names)
     genotype_meta_csv:
-        * A JSON file related to gene data processing
-        * pre_procedure: transformations that will perform when *load* the dataset
-        * post_procedure: transformations that will perform when *export* requested samples
+        • A JSON file related to gene data processing
+        • pre_procedure: transformations that will perform when *load* the dataset
+        • post_procedure: transformations that will perform when *export* requested samples
     phenotype_csv:
-        * Assuming rows are samples, columns are metadata contents
-        * rownames are sample identifiers (cell names)
+        • Assuming rows are samples, columns are metadata contents
+        • rownames are sample identifiers (cell names)
     phenotype_meta_csv:
-        * A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations for SAKURA model training
-        * Storage entity is a dict
-        * Type: 'categorical', 'numeric', 'ordinal' (tbd)
-        * For 'categorical' range: array of possible values, *ordered*
-        * pre_procedure: transformations that will perform when *load* the dataset
-        * post_procedure: transformations that will perform when *export* requested samples
+        • A JSON file to define Type, Range, and Order for phenotype columns, and related to phenotype configurations for SAKURA model training
+        • Storage entity is a dict
+        • Type: 'categorical', 'numeric', 'ordinal' (tbd)
+        • For 'categorical' range: array of possible values, *ordered*
+        • pre_procedure: transformations that will perform when *load* the dataset
+        • post_procedure: transformations that will perform when *export* requested samples
     Modes:
-        * 'all': export both raw and processed data, together with names/keys of cells
-        * 'key': export only names/keys of cells
-        * otherwise: export only processed data
+        • 'all': export both raw and processed data, together with names/keys of cells
+        • 'key': export only names/keys of cells
+        • otherwise: export only processed data
     Transformations:
-        * ToTensor: convert input data into a PyTorch tensor; input type should be 'gene' or 'pheno'
-        * ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise will use sorted labels, assuming the range of labels is derived from input data
-        * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned with a unique integer value, which can be useful for models that require numerical input
-        * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features into categorical features
+        • ToTensor: convert input data into a PyTorch tensor; input type should be 'gene' or 'pheno'
+        • ToOneHot: transform categorical data to one-hot encoding; an order of classes should be specified, otherwise will use sorted labels, assuming the range of labels is derived from input data
+        • ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned with a unique integer value, which can be useful for models that require numerical input
+        • ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features into categorical features
+
+    :param gene_csv_path:  Path to the gene csv file
+    :type gene_csv_path: str
+    :param pheno_csv_path: Path to the phenotype csv file
+    :type pheno_csv_path: str
+    :param gene_meta_json_path: Path to the genotype meta JSON file
+    :type gene_meta_json_path: str, optional
+    :param pheno_meta_json_path: Path to the phenotype meta JSON file
+    :type pheno_meta_json_path: str, optional
+    :param pheno_df_dtype: Pandas dtype applied to phenotype data,
+        either the whole dataframe or individual columns
+    :type pheno_df_dtype: dtype or dict of {Hashable dtype}, optional
+    :param pheno_df_na_filter*: Detect missing value markers
+        (empty strings and the value of na_values), defaults to True
+        :type pheno_df_na_filter: bool
+    :param gene_meta*: A configuration dictionary related to gene data processing
+    :type gene_meta: dict[str, Any], optional
+    :param pheno_meta: A dictionary contains definition and configurations of phenotype data
+    :type pheno_meta: dict[str, Any], optional
+    :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
+    :type mode: str
+    :param verbose: Whether to enable verbose console logging, defaults to False
+    :type verbose: bool
 
     .. note::
         For more details of the transformations, see :func:`utils.data_transformations`.
-    """
 
-    def __init__(self, gene_csv_path, pheno_csv_path,
-                 gene_meta_json_path=None, pheno_meta_json_path=None,
-                 pheno_df_dtype=None, pheno_df_na_filter=True,
-                 gene_meta=None, pheno_meta=None,
-                 mode='all', verbose=False):
-        """
-        :param gene_csv_path:  Path to the gene csv file
-        :type gene_csv_path: str
-        :param pheno_csv_path: Path to the phenotype csv file
-        :type pheno_csv_path: str
-        :param gene_meta_json_path: Path to the genotype meta JSON file
-        :type gene_meta_json_path: str, optional
-        :param pheno_meta_json_path: Path to the phenotype meta JSON file
-        :type pheno_meta_json_path: str, optional
-        :param pheno_df_dtype: Pandas dtype applied to phenotype data,
-            either the whole dataframe or individual columns
-        :type pheno_df_dtype: dtype or dict of {Hashable dtype}, optional
-        :param pheno_df_na_filter*: Detect missing value markers
-            (empty strings and the value of na_values), defaults to True
-        :type pheno_df_na_filter: bool
-        :param gene_meta*: A configuration dictionary related to gene data processing
-        :type gene_meta: dict[str, Any], optional
-        :param pheno_meta: A dictionary contains definition and configurations of phenotype data
-        :type pheno_meta: dict[str, Any], optional
-        :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
-        :type mode: str
-        :param verbose: Whether to enable verbose console logging, defaults to False
-        :type verbose: bool
-
-        .. note::
-            <gene_meta> example:
+        <gene_meta> example:
             {
                 "all": {
                     "gene_list": "*",
@@ -93,11 +85,18 @@ class SCRNASeqCountData(Dataset):
                     ]
                 }
             }
-            <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
-            <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
-                improve the performance of reading a large file.
-        """
 
+        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
+
+        <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+                improve the performance of reading a large file.
+    """
+
+    def __init__(self, gene_csv_path, pheno_csv_path,
+                 gene_meta_json_path=None, pheno_meta_json_path=None,
+                 pheno_df_dtype=None, pheno_df_na_filter=True,
+                 gene_meta=None, pheno_meta=None,
+                 mode='all', verbose=False):
         # Verbose console logging
         self.verbose=verbose
 
@@ -187,16 +186,17 @@ class SCRNASeqCountData(Dataset):
         This function iterates over the keys in the <gene_meta> dictionary, and for each key,
         it retrieves the corresponding metadata to determine how to slice the expression matrix.
         The results are stored in the <expr_mat_pre_sliced> attribute.
-        - If <gene_list> is a list or a numpy array, the function extracts the corresponding rows
-        from the `gene_expr_mat`.
-        - If <gene_list> is '*', the entire expression matrix is copied.
-        - If <gene_list> is '-', the function drops the rows specified in <exclude_list> from the
-        expression matrix.
+
+        gene_list:
+            • list or numpy array: the function extracts the corresponding rows from the `gene_expr_mat`;
+            • '*': the entire expression matrix is copied;
+            • '-': the function drops the rows specified in <exclude_list> from the expression matrix.
 
         After execution, the flag <flag_expr_set_pre_sliced> is set to True.
 
         :return: None
         """
+
         self.flag_expr_set_pre_sliced = True
         self.expr_mat_pre_sliced = dict()
         for cur_expr_key in self.gene_meta.keys():
@@ -210,24 +210,6 @@ class SCRNASeqCountData(Dataset):
                                                                                  axis=0).copy()
 
     def __select_expr_mat(self, cur_expr_key, item):
-        """
-        Selects a subset of the expression matrix based on the current expression key and specified items.
-
-        The selection process is as follows:
-        - If <flag_expr_set_pre_sliced> is True, it selects the pre-sliced expression matrix corresponding to <cur_expr_key> and <item>.
-        - If pre-slicing is not set, it evaluates the `gene_list` in the metadata:
-            - If `gene_list` is a list or a numpy array, it selects the specified genes.
-            - If `gene_list` is '*', it selects all genes.
-            - If `gene_list` is '-', it drops the genes specified in `exclude_list`.
-
-        :param cur_expr_key: The key identifying the current expression metadata
-        :type cur_expr_key: str
-        :param item: The columns to select from the expression matrix
-        :type item: list or int
-
-        :return: A DataFrame containing the selected subset of the expression matrix
-        :rtype: pd.DataFrame
-        """
         cur_expr_mat = None
         if self.flag_expr_set_pre_sliced:
             # Select pre-sliced expression matrices
@@ -256,11 +238,13 @@ class SCRNASeqCountData(Dataset):
 
         :param item: The index to select data from the dataset
         :type item: list or int
-        :param include_raw: should the unprocessed, subsetted expression matrix and phenotype data frame be exported, defaults to True
+        :param include_raw: should the unprocessed, subset expression matrix and phenotype data
+            frame be exported, defaults to True
         :type include_raw: bool
-        :param include_proc: should the processed data (following procedures specified in the configs) be exported, defaults to True
+        :param include_proc: should the processed data (following procedures specified in the configs)
+            be exported, defaults to True
         :type include_proc: bool
-        :param include_cell_key: should names/keys of the cells be exported
+        :param include_cell_key: should the names/keys of the cells be exported
         :type include_cell_key: bool
 
         :return: A dictionary containing data of the specified items from the dataset
@@ -341,25 +325,10 @@ class SCRNASeqCountData(Dataset):
         return ret
 
     def __len__(self):
-        """
-        Length of the dataset is considered as the number of cells
-
-        :return: Length of the dataset
-        :rtype: int
-        """
         # Length of the dataset is considered as the number of cells
         return self.gene_expr_mat.shape[1]
 
     def __getitem__(self, item):
-        """
-        Retrieve the data at the specified item key.
-
-        This method allows Dataloader(s) for item indexing into the dataset to obtain
-        a specific data sample.
-
-        :return: A dictionary containing data of the specified item from the dataset
-        :rtype: dict[str, Any]
-        """
         if self.mode == 'all':
             return self.export_data(item,
                                     include_raw=True,
