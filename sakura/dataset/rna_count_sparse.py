@@ -24,6 +24,31 @@ class SCRNASeqCountDataSparse(Dataset):
 
     Accepts matrixMM (could be dgcmatrix in R) as data contained (will still load everything into memory, but using sparse matrix now).
 
+    :param gene_MM_path: Path to the gene MM file
+    :type gene_MM_path: str
+    :param gene_name_csv_path: Path to the gene name csv file
+    :type gene_name_csv_path: str
+    :param cell_name_csv_path: Path to the cell name csv file
+    :type cell_name_csv_path: str
+    :param pheno_csv_path: Path to the phenotype csv file
+    :type pheno_csv_path: str
+    :param pheno_df_dtype: Pandas dtype applied to phenotype data, either the whole dataframe or individual columns
+    :type pheno_df_dtype: dtype or dict of {Hashable dtype}, optional
+    :param pheno_df_na_filter*: Detect missing value markers (empty strings and the value of na_values), defaults to True
+    :type pheno_df_na_filter: bool
+    :param gene_meta_json_path: Path to the genotype meta JSON file
+    :type gene_meta_json_path: str, optional
+    :param pheno_meta_json_path: Path to the phenotype meta JSON file
+    :type pheno_meta_json_path: str, optional
+    :param gene_meta*: A configuration dictionary related to gene data processing
+    :type gene_meta: dict[str, Any], optional
+    :param pheno_meta: A dictionary contains definition and configurations of phenotype data
+    :type pheno_meta: dict[str, Any], optional
+    :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
+    :type mode: str
+    :param verbose: Whether to enable verbose console logging, defaults to False
+    :type verbose: bool
+
     **Expected inputs:**
 
     **gene_MM:** gene expression matrix MM .mtx file
@@ -84,35 +109,6 @@ class SCRNASeqCountDataSparse(Dataset):
                  gene_meta_json_path=None, pheno_meta_json_path=None,
                  gene_meta=None, pheno_meta=None,
                  mode='all', verbose=False):
-        """
-        :param gene_MM_path: Path to the gene MM file
-        :type gene_MM_path: str
-        :param gene_name_csv_path: Path to the gene name csv file
-        :type gene_name_csv_path: str
-        :param cell_name_csv_path: Path to the cell name csv file
-        :type cell_name_csv_path: str
-        :param pheno_csv_path: Path to the phenotype csv file
-        :type pheno_csv_path: str
-        :param pheno_df_dtype: Pandas dtype applied to phenotype data, either the whole dataframe or individual columns
-        :type pheno_df_dtype: dtype or dict of {Hashable dtype}, optional
-        :param pheno_df_na_filter*: Detect missing value markers (empty strings and the value of na_values), defaults to True
-        :type pheno_df_na_filter: bool
-        :param gene_meta_json_path: Path to the genotype meta JSON file
-        :type gene_meta_json_path: str, optional
-        :param pheno_meta_json_path: Path to the phenotype meta JSON file
-        :type pheno_meta_json_path: str, optional
-        :param gene_meta*: A configuration dictionary related to gene data processing
-        :type gene_meta: dict[str, Any], optional
-        :param pheno_meta: A dictionary contains definition and configurations of phenotype data
-        :type pheno_meta: dict[str, Any], optional
-        :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
-        :type mode: str
-        :param verbose: Whether to enable verbose console logging, defaults to False
-        :type verbose: bool
-
-
-        """
-
         # Verbose console logging
         self.verbose = verbose
 

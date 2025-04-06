@@ -279,23 +279,28 @@ class Extractor(torch.nn.Module):
         Orchestrates data flow through the assembled modular architecture, enabling selective
         activation of task branches and gradient flow control.
 
-        :param batch: Gene expression tensors, shape should be (N,M), where N is number of cell, M is number of gene
+        :param batch: Gene expression tensors, shape should be (N,M), where N is number of cell,
+            M is number of gene
         :type batch: torch.Tensor
         :param forward_signature: Whether to forward signature supervision part, defaults to True
         :type forward_signature: bool
-        :param selected_signature: List of selected signatures to be forwarded, None to forward all signatures
+        :param selected_signature: List of selected signatures to be forwarded,
+            None to forward all signatures
         :type selected_signature: list[str], optional
         :param forward_pheno: Whether to forward phenotype supervision part, defaults to True
         :type forward_pheno: bool
-        :param selected_pheno: List of selected phenotypes to be forwarded, None to forward all phenotypes
+        :param selected_pheno: List of selected phenotypes to be forwarded,
+            None to forward all phenotypes
         :type selected_pheno: list[str], optional
         :param forward_main_latent: Whether to forward main latent part, defaults to True
         :type forward_main_latent: bool
         :param forward_reconstruction*: Whether to forward decoder reconstruction part, defaults to True
         :type forward_reconstruction: bool
-        :param detach: Should the gradient be blocked from midway of the network as specified in <detach_from>, defaults to False
+        :param detach: Should the gradient be blocked from midway of the network
+            as specified in <detach_from>, defaults to False
         :type detach: bool
-        :param detach_from: Specific component from which the gradient should be blocked if <detach> is True
+        :param detach_from: Specific component from which the gradient should be blocked
+            if <detach> is True
         :type detach_from: Literal['pre_encoder', 'encoder'] or str
 
         :return: a dictionary containing hierarchical outputs with keys of model forwarding
@@ -305,13 +310,13 @@ class Extractor(torch.nn.Module):
             <forward_reconstruction>: The decoder reconstruction part could only be forwarded when
             all latent dimensions are forwarded.
 
-            **Gradient reverse layer** and **gradient neutralize layer** related computations are done
-            in :mod:`model_controllers.extractor_controller`.
-
-            Gradient backpropagation detachment:
+            <detach_from> options:
                 • 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
                 • 'encoder' (main_lat, pheno_lat, signature_lat will be detached,
-                neither pre-encoder nor encoder will be trained).
+                    neither pre-encoder nor encoder will be trained).
+
+            **Gradient reverse layer** and **gradient neutralize layer** related computations are done
+            in :mod:`model_controllers.extractor_controller`.
         """
         # Forward Pre Encoder
         lat_pre = self.model['pre_encoder'](batch)
