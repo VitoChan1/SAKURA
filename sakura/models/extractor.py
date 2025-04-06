@@ -16,6 +16,21 @@ class Extractor(torch.nn.Module):
     class role in extracting high-level representations through the assembled components
     as dimensionality reduction being the main task.
 
+    :param input_dim: The dimensionality of the model inputs
+    :type input_dim: int
+    :param signature_config: Model configuration settings
+        for the signature regression branch
+    :type signature_config: dict[str, Any], optional
+    :param pheno_config: Model configuration settings for the phenotype prediction/regression branch
+    :type pheno_config: dict[str, Any], optional
+    :param main_lat_config: Model configuration settings for the main latent representation
+        of the autoencoder backbone
+    :type main_lat_config: dict[str, Any]
+    :param pre_encoder_config: Model configuration settings for the pre-encoder stage
+    :type pre_encoder_config: dict[str, Any], optional
+    :param verbose: Whether to enable verbose console logging, defaults to False
+    :type verbose: bool
+
     Architecture Composition:
         • pre_encoder (nn.Module): Raw input preprocessing/initial feature transformation
         • main_latent_compressor (nn.Module): Core bottleneck for dimensionality reduction
@@ -35,20 +50,6 @@ class Extractor(torch.nn.Module):
                  input_dim: int,
                  signature_config=None, pheno_config=None, main_lat_config=None,
                  pre_encoder_config=None, verbose=False):
-        """
-        :param input_dim: The dimensionality of the model inputs
-        :type input_dim: int
-        :param signature_config: Model configuration settings for the signature regression branch
-        :type signature_config: dict[str, Any], optional
-        :param pheno_config: Model configuration settings for the phenotype prediction/regression branch
-        :type pheno_config: dict[str, Any], optional
-        :param main_lat_config: Model configuration settings for the main latent representation of the autoencoder backbone
-        :type main_lat_config: dict[str, Any]
-        :param pre_encoder_config: Model configuration settings for the pre-encoder stage
-        :type pre_encoder_config: dict[str, Any], optional
-        :param verbose: Whether to enable verbose console logging, defaults to False
-        :type verbose: bool
-        """
         super(Extractor, self).__init__()
 
         # Verbose logging for debugging
@@ -278,10 +279,6 @@ class Extractor(torch.nn.Module):
         Orchestrates data flow through the assembled modular architecture, enabling selective
         activation of task branches and gradient flow control.
 
-        Gradient backpropagation detachment:
-            • 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained); OR
-            • 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained)
-
         :param batch: Gene expression tensors, shape should be (N,M), where N is number of cell, M is number of gene
         :type batch: torch.Tensor
         :param forward_signature: Whether to forward signature supervision part, defaults to True
@@ -305,9 +302,16 @@ class Extractor(torch.nn.Module):
         :rtype: dict[str, torch.Tensor]
 
         .. note::
-            <forward_reconstruction>: The decoder reconstruction part could only be forwarded when all latent dimensions are forwarded.
+            <forward_reconstruction>: The decoder reconstruction part could only be forwarded when
+            all latent dimensions are forwarded.
+
             **Gradient reverse layer** and **gradient neutralize layer** related computations are done
             in :mod:`model_controllers.extractor_controller`.
+
+            Gradient backpropagation detachment:
+                • 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
+                • 'encoder' (main_lat, pheno_lat, signature_lat will be detached,
+                neither pre-encoder nor encoder will be trained).
         """
         # Forward Pre Encoder
         lat_pre = self.model['pre_encoder'](batch)

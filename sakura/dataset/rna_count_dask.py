@@ -18,6 +18,23 @@ class SCRNASeqCountDataDask(Dataset):
 
     This class fits for dataset with a very large number of cells.
 
+    :param gene_csv_path:  Path to the gene csv file
+    :type gene_csv_path: str
+    :param pheno_csv_path: Path to the phenotype csv file
+    :type pheno_csv_path: str
+    :param gene_meta_json_path: Path to the genotype meta JSON file
+    :type gene_meta_json_path: str, optional
+    :param pheno_meta_json_path: Path to the phenotype meta JSON file
+    :type pheno_meta_json_path_path: str, optional
+    :param gene_meta*: A configuration dictionary related to gene data processing
+    :type gene_meta: dict[str, Any], optional
+    :param pheno_meta: A dictionary contains definition and configurations of phenotype data
+    :type pheno_meta: dict[str, Any], optional
+    :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
+    :type mode: str
+    :param verbose: Whether to enable verbose console logging, defaults to False
+    :type verbose: bool
+
     **Expected inputs:**
     Unlike rna_count, which directly accepts the Seurat compatible datasheets (i.e. row gene, col cell)
 
@@ -49,50 +66,33 @@ class SCRNASeqCountDataDask(Dataset):
         * ToOrdinal: convert categorical data into ordinal (integer) encoding; each unique category is assigned with a unique integer value, which can be useful for models that require numerical input
         * ToKBins: transform continuous data into `k` bins; quantile-based binning is applied to convert continuous features into categorical features
 
+    .. note::
+        For more details of the transformations, see :func:`utils.data_transformations`.
+
+        <gene_meta> example:
+
+        .. code-block::
+
+            {
+                'all': {
+                    'gene_list': "*",
+                    'pre_procedure': [],
+                    'post_procedure': [{
+                    'type': "ToTensor"
+                    }]
+                }
+            }
+
+        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
+
+        <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+        improve the performance of reading a large file.
     """
 
     def __init__(self, gene_csv_path, pheno_csv_path,
                  gene_meta_json_path=None, pheno_meta_json_path=None,
                  gene_meta=None, pheno_meta=None,
                  mode='all', verbose=False):
-        """
-        :param gene_csv_path:  Path to the gene csv file
-        :type gene_csv_path: str
-        :param pheno_csv_path: Path to the phenotype csv file
-        :type pheno_csv_path: str
-        :param gene_meta_json_path: Path to the genotype meta JSON file
-        :type gene_meta_json_path: str, optional
-        :param pheno_meta_json_path: Path to the phenotype meta JSON file
-        :type pheno_meta_json_path_path: str, optional
-        :param gene_meta*: A configuration dictionary related to gene data processing
-        :type gene_meta: dict[str, Any], optional
-        :param pheno_meta: A dictionary contains definition and configurations of phenotype data
-        :type pheno_meta: dict[str, Any], optional
-        :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
-        :type mode: str
-        :param verbose: Whether to enable verbose console logging, defaults to False
-        :type verbose: bool
-
-        .. note::
-            <gene_meta> example:
-            {
-                "all": {
-                    "gene_list": "*",
-                    "pre_procedure": [],
-                    'post_procedure': [
-                        {
-                            "type": "ToTensor"
-                        }
-                    ]
-                }
-            }
-
-            <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
-
-            <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
-            improve the performance of reading a large file.
-        """
-
         # Verbose console logging
         self.verbose = verbose
 

@@ -6,9 +6,10 @@ import torch.nn as nn
 
 def modulebuilder(cfg):
     """
-    Builds neural network layers in sequential order based on configurations
+    Builds neural network layers in sequential order based on configurations.
 
-    Module configuration:
+    **Module configuration:**
+
     Each dict should contain key 'type' (str): Module type identifier. Supported types:
         • 'Linear': Requires 'in_dim' and 'out_dim' keys
         • 'Dropout': Optional 'p' key (default: 0.5)
@@ -42,13 +43,36 @@ def modulebuilder(cfg):
 
 class FCDecoder(nn.Module):
     """
-    Fully connected decoder module class.
+    Fully connected decoder module class
 
     Module supports configurable hidden layers and neurons,
     various output activation functions, and dropout regularization.
 
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type output_dim: int
+    :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
+    :type hidden_neurons: int or list[int]
+    :param hidden_layers: The number of layer(s) in the network, defaults to 3
+    :type hidden_layers: int
+    :param output_activation_function: The activation function for the output layer, defaults to 'relu'
+    :type output_activation_function: Literal['relu', 'softmax','identity']
+    :param dropout: Whether to apply dropout regularization, defaults to False
+    :type dropout: bool
+    :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+    :type dropout_input: bool
+    :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+    :type dropout_input_p: float
+    :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+    :type dropout_hidden: bool
+    :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
+
     Architecture details:
-        • When config is None, default 3 hidden layers with structure: Input → Linear → CELU → Linear → CELU → Linear → Output
+        • When config is None, default 3 hidden layers with structure:
+        Input → Linear → CELU → Linear → CELU → Linear → Output
         • Hidden layer neurons can be uniform (single neuron count) or varied (list)
         • Optional dropout placement after the input layer
         • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
@@ -62,29 +86,6 @@ class FCDecoder(nn.Module):
                  dropout_input=False, dropout_input_p=0.5,
                  dropout_hidden=False, dropout_hidden_p=0.5,
                  config=None):
-        """
-        :param input_dim: The dimensionality of the input data
-        :type input_dim: int
-        :param output_dim: The dimensionality of the output data
-        :type output_dim: int
-        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
-        :type hidden_neurons: int or list[int]
-        :param hidden_layers: The number of layer(s) in the network, defaults to 3
-        :type hidden_layers: int
-        :param output_activation_function: The activation function for the output layer, defaults to 'relu'
-        :type output_activation_function: Literal['relu', 'softmax','identity']
-        :param dropout: Whether to apply dropout regularization, defaults to False
-        :type dropout: bool
-        :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-        :type dropout_input: bool
-        :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-        :type dropout_input_p: float
-        :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-        :type dropout_hidden: bool
-        :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
-        :param config: A list of the module layer configuration dictionaries
-        :type config: list[dict],optional
-        """
         super(FCDecoder, self).__init__()
         self.model_list = nn.ModuleList()
         self.config = config
@@ -175,6 +176,26 @@ class FCPreEncoder(nn.Module):
     Module supports configurable hidden layers and neurons,
     as well as dropout regularization.
 
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type input_dim: int
+    :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
+    :type hidden_neurons: int or list[int]
+    :param hidden_layers: The number of layer(s) in the network, defaults to 2
+    :type hidden_layers: int
+    :param dropout: Whether to apply dropout regularization, defaults to False
+    :type dropout: bool
+    :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+    :type dropout_input: bool
+    :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+    :type dropout_input_p: float
+    :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+    :type dropout_hidden: bool
+    :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
+
     Architecture details:
         • When config is None, default 2 hidden layers with structure: Input → Linear → CELU → Linear → CELU → Output
         • Hidden layer neurons can be uniform (single neuron count) or varied (list)
@@ -188,27 +209,6 @@ class FCPreEncoder(nn.Module):
                  dropout_input=False, dropout_input_p=0.5,
                  dropout_hidden=False, dropout_hidden_p=0.5,
                  config=None):
-        """
-        :param input_dim: The dimensionality of the input data
-        :type input_dim: int
-        :param output_dim: The dimensionality of the output data
-        :type input_dim: int
-        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
-        :type hidden_neurons: int or list[int]
-        :param hidden_layers: The number of layer(s) in the network, defaults to 2
-        :type hidden_layers: int
-        :param dropout: Whether to apply dropout regularization, defaults to False
-        :type dropout: bool
-        :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-        :type dropout_input: bool
-        :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-        :type dropout_input_p: float
-        :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-        :type dropout_hidden: bool
-        :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
-        :param config: A list of the module layer configuration dictionaries
-        :type config: list[dict],optional
-        """
         super(FCPreEncoder, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -299,6 +299,17 @@ class FCCompressor(nn.Module):
     This module is designed to compress outputs from pre-encoder
     to a lower dimension with configurable hidden layers and neurons.
 
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type input_dim: int
+    :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
+    :type hidden_neurons: int
+    :param hidden_layers: The number of layer(s) in the network, defaults to 1
+    :type hidden_layers: int
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
+
     Architecture details:
         • When config is None, default 1 layer compressor: Input → Linear → CELU → Output
         • Hidden layer neurons can be uniform (single neuron count) or varied (list)
@@ -311,18 +322,6 @@ class FCCompressor(nn.Module):
                  #dropout_input=False, dropout_input_p=0.5,
                  #dropout_hidden=False, dropout_hidden_p=0.5,
                  config=None):
-        """
-        :param input_dim: The dimensionality of the input data
-        :type input_dim: int
-        :param output_dim: The dimensionality of the output data
-        :type input_dim: int
-        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
-        :type hidden_neurons: int
-        :param hidden_layers: The number of layer(s) in the network, defaults to 1
-        :type hidden_layers: int
-        :param config: A list of the module layer configuration dictionaries
-        :type config: list[dict],optional
-        """
         super(FCCompressor, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim

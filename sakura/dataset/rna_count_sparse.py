@@ -58,6 +58,25 @@ class SCRNASeqCountDataSparse(Dataset):
 
     .. note::
         For more details of the transformations, see :func:`utils.data_transformations`.
+
+        <gene_meta> example:
+
+        .. code-block::
+
+            {
+                'all': {
+                    'gene_list': "*",
+                    'pre_procedure': [],
+                    'post_procedure': [{
+                    'type': "ToTensor"
+                    }]
+                }
+            }
+
+        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
+
+        <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+        improve the performance of reading a large file.
     """
 
     def __init__(self, gene_MM_path, gene_name_csv_path, cell_name_csv_path,
@@ -91,22 +110,6 @@ class SCRNASeqCountDataSparse(Dataset):
         :param verbose: Whether to enable verbose console logging, defaults to False
         :type verbose: bool
 
-        .. note::
-            <gene_meta> example:
-            {
-                "all": {
-                    "gene_list": "*",
-                    "pre_procedure": [],
-                    'post_procedure': [
-                        {
-                            "type": "ToTensor"
-                        }
-                    ]
-                }
-            }
-            <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
-            <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can improve the performance
-            of reading a large file.
 
         """
 
@@ -228,11 +231,11 @@ class SCRNASeqCountDataSparse(Dataset):
         This function iterates over the keys in the <gene_meta> dictionary, and for each key,
         it retrieves the corresponding metadata to determine how to slice the expression matrix.
         The results are stored in the <expr_mat_pre_sliced> attribute.
-        - If <gene_list> is a list or a numpy array, the function extracts the corresponding rows
-        from the `gene_expr_mat`.
-        - If <gene_list> is '*', the entire expression matrix is copied.
-        - If <gene_list> is '-', the function drops the rows specified in <exclude_list> from the
-        expression matrix.
+
+        gene_list:
+            • list or numpy array: the function extracts the corresponding rows from the `gene_expr_mat`;
+            • '*': the entire expression matrix is copied;
+            • '-': the function drops the rows specified in <exclude_list> from the expression matrix.
 
         After execution, the flag <flag_expr_set_pre_sliced> is set to True.
 
@@ -251,24 +254,6 @@ class SCRNASeqCountDataSparse(Dataset):
                                                                                  axis=0).copy()
 
     def __select_expr_mat(self, cur_expr_key, item):
-        """
-        Selects a subset of the expression matrix based on the current expression key and specified items.
-
-        The selection process is as follows:
-        - If <flag_expr_set_pre_sliced> is True, it selects the pre-sliced expression matrix corresponding to <cur_expr_key> and <item>.
-        - If pre-slicing is not set, it evaluates the `gene_list` in the metadata:
-            - If `gene_list` is a list or a numpy array, it selects the specified genes.
-            - If `gene_list` is '*', it selects all genes.
-            - If `gene_list` is '-', it drops the genes specified in `exclude_list`.
-
-        :param cur_expr_key: The key identifying the current expression metadata
-        :type cur_expr_key: str
-        :param item: The columns to select from the expression matrix
-        :type item: list or int
-
-        :return: A DataFrame containing the selected subset of the expression matrix
-        :rtype: pd.DataFrame
-        """
         cur_expr_mat = None
         if self.flag_expr_set_pre_sliced:
             # Select pre-sliced expression matrices
@@ -298,11 +283,13 @@ class SCRNASeqCountDataSparse(Dataset):
 
         :param item: The index to select data from the dataset
         :type item: list or int
-        :param include_raw: should the unprocessed, subsetted expression matrix and phenotype data frame be exported, defaults to True
+        :param include_raw: Whether to export the unprocessed, subset expression matrix and
+            phenotype data frame, defaults to True
         :type include_raw: bool
-        :param include_proc: should the processed data (following procedures specified in the configs) be exported, defaults to True
+        :param include_proc: Whether to export the processed data (following procedures specified in the configs),
+            defaults to True
         :type include_proc: bool
-        :param include_cell_key: should names/keys of the cells be exported
+        :param include_cell_key: Should the names/keys of the cells be exported
         :type include_cell_key: bool
 
         :return: A dictionary containing data of the specified item(s) from the dataset
@@ -424,25 +411,10 @@ class SCRNASeqCountDataSparse(Dataset):
                                 include_cell_key=True)
 
     def __len__(self):
-        """
-        Length of the dataset is considered as the number of cells
-
-        :return: Length of the dataset
-        :rtype: int
-        """
         # Length of the dataset is considered as the number of cells
         return self.gene_expr_mat.shape[1]
 
     def __getitem__(self, item):
-        """
-        Retrieve the data at the specified item key.
-
-        This method allows Dataloader(s) for item indexing into the dataset to obtain
-        a specific data sample.
-
-        :return: A dictionary containing data of the specified item from the dataset
-        :rtype: dict[str, Any]
-        """
         if self.mode == 'all':
             return self.export_data(item,
                                     include_raw=True,

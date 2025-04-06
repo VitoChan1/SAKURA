@@ -74,7 +74,9 @@ class SCRNASeqCountData(Dataset):
         For more details of the transformations, see :func:`utils.data_transformations`.
 
         <gene_meta> example:
-        ```
+
+        .. code-block::
+
             {
                 'all': {
                     'gene_list': "*",
@@ -84,7 +86,7 @@ class SCRNASeqCountData(Dataset):
                     }]
                 }
             }
-        ```
+
         <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
 
         <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
@@ -237,13 +239,13 @@ class SCRNASeqCountData(Dataset):
 
         :param item: The index to select data from the dataset
         :type item: list or int
-        :param include_raw: should the unprocessed, subset expression matrix and phenotype data
-            frame be exported, defaults to True
+        :param include_raw: Whether to export the unprocessed, subset expression matrix and
+            phenotype data frame, defaults to True
         :type include_raw: bool
-        :param include_proc: should the processed data (following procedures specified in the configs)
-            be exported, defaults to True
+        :param include_proc: Whether to export the processed data (following procedures specified in the configs),
+            defaults to True
         :type include_proc: bool
-        :param include_cell_key: should the names/keys of the cells be exported
+        :param include_cell_key: Should the names/keys of the cells be exported
         :type include_cell_key: bool
 
         :return: A dictionary containing data of the specified items from the dataset
