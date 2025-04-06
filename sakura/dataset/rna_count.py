@@ -75,11 +75,11 @@ class SCRNASeqCountData(Dataset):
 
         <gene_meta> example:
         {
-            "all": {
-                "gene_list": "*",
-                "pre_procedure": [],
+            'all': {
+                'gene_list': "*",
+                'pre_procedure': [],
                 'post_procedure': [{
-                    "type": "ToTensor"
+                'type': "ToTensor"
                 }]
             }
         }

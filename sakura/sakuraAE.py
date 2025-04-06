@@ -841,7 +841,7 @@ class sakuraAE(object):
                      loss_prog_on_test: dict = None,
                      resume=False, resume_dict=None):
         """
-        Train the model in hybrid mode, where model module splits are trained as configured.
+        Train the model in hybrid mode, where model module splits are trained with flexibility.
 
         :param split_configs: A dictionary containing module split configurations used for training, should contain below keys
             for each module split: 'use_split','batch_size','train_main_latent','train_pheno','train_signature'
@@ -1172,7 +1172,7 @@ class sakuraAE(object):
                              prefetch_strategy='reuse', reuse_factor=8, reuse_shuffle_when_reassign=False):
         """
         Implement the multithread dataloader version of hybrid mode training,
-        where model module splits are trained as configured.
+        where model module splits are trained with flexibility.
 
         :param prefetch_strategy: The strategy for prefetching data in the multithread dataloader,
             defaults to 'reuse' sets of loaded data batches to reduce I/O overhead
