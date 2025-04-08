@@ -84,7 +84,7 @@ class SCRNASeqCountDataSparse(Dataset):
     .. note::
         For more details of the transformations, see :func:`utils.data_transformations`.
 
-        <gene_meta> example:
+        **<gene_meta> example:**
 
         .. code-block::
 
@@ -98,9 +98,9 @@ class SCRNASeqCountDataSparse(Dataset):
                 }
             }
 
-        <pheno_meta>: For more details of the JSON structure, see :func:`utils.data_transformations`.
+        **<pheno_meta>:** For more details of the JSON structure, see :func:`utils.data_transformations`.
 
-        <na_filter>: For phenotype data without any NA values, passing <na_filter>=False can
+        **<na_filter>:** For phenotype data without any NA values, passing <na_filter>=False can
         improve the performance of reading a large file.
     """
 

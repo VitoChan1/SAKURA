@@ -307,15 +307,15 @@ class Extractor(torch.nn.Module):
         :rtype: dict[str, torch.Tensor]
 
         .. note::
-            <forward_reconstruction>: The decoder reconstruction part could only be forwarded when
+            **<forward_reconstruction>:** The decoder reconstruction part could only be forwarded when
             all latent dimensions are forwarded.
 
             <detach_from> options:
-                • 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
-                • 'encoder' (main_lat, pheno_lat, signature_lat will be detached,
-                    neither pre-encoder nor encoder will be trained).
 
-            **Gradient reverse layer** and **gradient neutralize layer** related computations are done
+            - 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
+            - 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained).
+
+            Gradient reverse layer and gradient neutralize layer related computations are done
             in :mod:`model_controllers.extractor_controller`.
         """
         # Forward Pre Encoder

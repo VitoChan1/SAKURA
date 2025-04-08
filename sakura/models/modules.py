@@ -11,9 +11,10 @@ def modulebuilder(cfg):
     **Module configuration:**
 
     Each dict should contain key 'type' (str): Module type identifier. Supported types:
-        • 'Linear': Requires 'in_dim' and 'out_dim' keys
-        • 'Dropout': Optional 'p' key (default: 0.5)
-        • 'ReLU', 'CELU', 'Softmax', 'LogSoftmax': No additional params
+
+    • 'Linear': Requires 'in_dim' and 'out_dim' keys
+    • 'Dropout': Optional 'p' key (default: 0.5)
+    • 'ReLU', 'CELU', 'Softmax', 'LogSoftmax': No additional params
 
     :param cfg: A list of module configuration dictionaries
     :type cfg: list[dict]
@@ -22,11 +23,11 @@ def modulebuilder(cfg):
     :rtype: list[nn.Module]
     """
     ret = list() #nn.ModuleList()
-    cur_dim=cfg['in_dim']
+    #cur_dim=cfg['in_dim']
     for cur_module in cfg:
         if cur_module['type'] == 'Linear':
             ret.append(nn.Linear(in_features=cur_module['in_dim'], out_features=cur_module['out_dim']))
-            cur_dim = cur_module['out_dim']
+            #cur_dim = cur_module['out_dim']
         elif cur_module['type'] == 'Dropout':
             ret.append(nn.Dropout(p=cur_module.get('p')))
         elif cur_module['type'] == 'ReLU':
@@ -46,7 +47,15 @@ class FCDecoder(nn.Module):
     Fully connected decoder module class
 
     Module supports configurable hidden layers and neurons,
-    various output activation functions, and dropout regularization.
+    output activation functions, and dropout regularization.
+
+    Architecture details:
+        • When config is None, default 3 hidden layers with structure:\
+          Input → Linear → CELU → Linear → CELU → Linear → Output
+        • Hidden layer neurons can be uniform (single neuron count) or varied (list)
+        • Optional dropout placement after the input layer
+        • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
+        • Final layer always has output_dim neurons with optional activation
 
     :param input_dim: The dimensionality of the input data
     :type input_dim: int
@@ -69,15 +78,6 @@ class FCDecoder(nn.Module):
     :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
     :param config: A list of the module layer configuration dictionaries
     :type config: list[dict],optional
-
-    Architecture details:
-        • When config is None, default 3 hidden layers with structure:
-        Input → Linear → CELU → Linear → CELU → Linear → Output
-        • Hidden layer neurons can be uniform (single neuron count) or varied (list)
-        • Optional dropout placement after the input layer
-        • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
-        • Final layer always has output_dim neurons with optional activation
-
     """
     def __init__(self, input_dim, output_dim,
                  hidden_neurons=50, hidden_layers=3,
@@ -176,6 +176,13 @@ class FCPreEncoder(nn.Module):
     Module supports configurable hidden layers and neurons,
     as well as dropout regularization.
 
+    Architecture details:
+        • When config is None, default 2 hidden layers with structure: \
+          Input → Linear → CELU → Linear → CELU → Output
+        • Hidden layer neurons can be uniform (single neuron count) or varied (list)
+        • Optional dropout placement after the input layer
+        • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
+
     :param input_dim: The dimensionality of the input data
     :type input_dim: int
     :param output_dim: The dimensionality of the output data
@@ -195,13 +202,6 @@ class FCPreEncoder(nn.Module):
     :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
     :param config: A list of the module layer configuration dictionaries
     :type config: list[dict],optional
-
-    Architecture details:
-        • When config is None, default 2 hidden layers with structure: Input → Linear → CELU → Linear → CELU → Output
-        • Hidden layer neurons can be uniform (single neuron count) or varied (list)
-        • Optional dropout placement after the input layer
-        • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
-
     """
     def __init__(self, input_dim: int, output_dim: int,
                  hidden_neurons=None, hidden_layers=2,
@@ -299,6 +299,10 @@ class FCCompressor(nn.Module):
     This module is designed to compress outputs from pre-encoder
     to a lower dimension with configurable hidden layers and neurons.
 
+    Architecture details:
+        • When config is None, default 1 layer compressor: Input → Linear → CELU → Output
+        • Hidden layer neurons can be uniform (single neuron count) or varied (list)
+
     :param input_dim: The dimensionality of the input data
     :type input_dim: int
     :param output_dim: The dimensionality of the output data
@@ -309,11 +313,6 @@ class FCCompressor(nn.Module):
     :type hidden_layers: int
     :param config: A list of the module layer configuration dictionaries
     :type config: list[dict],optional
-
-    Architecture details:
-        • When config is None, default 1 layer compressor: Input → Linear → CELU → Output
-        • Hidden layer neurons can be uniform (single neuron count) or varied (list)
-
     """
 
     def __init__(self, input_dim: int, output_dim: int,
@@ -403,10 +402,30 @@ class FCClassifier(nn.Module):
     Training goal is to predict cell/sample labels (e.g. cell type, group).
 
     Architecture details:
-        • When config is None, legacy mode 3 hidden layers with structure: Input --> Linear --> CELU --> Linear --> CELU --> Linear --> LogSoftmax --> Output
+        • When config is None, legacy mode 3 hidden layers with structure:\
+          Input --> Linear --> CELU --> Linear --> CELU --> Linear --> LogSoftmax --> Output
         • Optional dropout placement after the input layer
         • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
 
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type output_dim: int
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
+    :param hidden_neurons: The number of neurons in each hidden layer, defaults to 5
+    :type hidden_neurons: int or list[int]
+    :param hidden_layers: The number of layer(s) in the network
+    :type hidden_layers: int
+    :param dropout: Whether to apply dropout regularization, defaults to False
+    :type dropout: bool
+    :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+    :type dropout_input: bool
+    :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+    :type dropout_input_p: float
+    :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+    :type dropout_hidden: bool
+    :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
     """
 
     def __init__(self, input_dim, output_dim,
@@ -553,17 +572,40 @@ class FCRegressor(nn.Module):
     """
     Fully connected regressor module class
 
-    Module is designed for cell/sample supervision.
-    with configurable hidden layers and neurons, various, and dropout regularization.
+    Module is designed for cell/sample supervision with configurable
+    hidden layers and neurons, output activation functions, and dropout regularization.
     Use entire latent space or designated dimension(s) as input.
-    Training goal is to predict cell/sample signatures or phenotypes with continuous values (e.g. expression levels of genes or proteins).
+    Training goal is to predict cell/sample signatures or phenotypes with continuous values
+    (e.g. expression levels of genes or proteins).
 
     Architecture details:
-        • When config is None, legacy mode 3 hidden layers with structure: Input --> Linear --> CELU --> Linear --> CELU --> Linear --> Activation --> Output
+        • When config is None, legacy mode 3 hidden layers with structure: \
+          Input --> Linear --> CELU --> Linear --> CELU --> Linear --> Activation --> Output
         • Optional dropout placement after the input layer
         • Optional but uniform dropout placement after hidden layers (if #hidden_layer > 1)
         • Final layer always has output_dim neurons with optional activation
 
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type output_dim: int
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
+    :param hidden_neurons: The number of neurons in each hidden layer, defaults to 5
+    :type hidden_neurons: int or list[int]
+    :param hidden_layers: The number of layer(s) in the network
+    :type hidden_layers: int
+    :param output_activation_function: The activation function for the output layer, defaults to 'identity'
+    :type output_activation_function: Literal['relu', 'softmax','identity']
+    :param dropout: Whether to apply dropout regularization, defaults to False
+    :type dropout: bool
+    :param dropout_input: Whether to apply dropout to the input layer, defaults to False
+    :type dropout_input: bool
+    :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
+    :type dropout_input_p: float
+    :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
+    :type dropout_hidden: bool
+    :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
     """
 
     def __init__(self, input_dim, output_dim, config=None,
@@ -572,29 +614,6 @@ class FCRegressor(nn.Module):
                  dropout=False,
                  dropout_input=False, dropout_input_p=0.5,
                  dropout_hidden=False, dropout_hidden_p=0.5):
-        """
-        :param input_dim: The dimensionality of the input data
-        :type input_dim: int
-        :param output_dim: The dimensionality of the output data
-        :type output_dim: int
-        :param config: A list of the module layer configuration dictionaries
-        :type config: list[dict],optional
-        :param hidden_neurons: The number of neurons in each hidden layer, defaults to 5
-        :type hidden_neurons: int or list[int]
-        :param hidden_layers: The number of layer(s) in the network, defaults to 3
-        :type hidden_layers: int
-        :param output_activation_function: The activation function for the output layer, defaults to 'identity'
-        :type output_activation_function: Literal['relu', 'softmax','identity']
-        :param dropout: Whether to apply dropout regularization, defaults to False
-        :type dropout: bool
-        :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-        :type dropout_input: bool
-        :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-        :type dropout_input_p: float
-        :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-        :type dropout_hidden: bool
-        :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
-        """
         super(FCRegressor, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -704,6 +723,13 @@ class LinClassifier(nn.Module):
     Use single linear layer and softmax activation function to do classification.
     Useful when simple and linear structure is expected from certain latent dimension.
     When config is None, default structure: Input --> Linear --> LogSoftmax --> Output.
+
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type output_dim: int
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
     """
     def __init__(self, input_dim, output_dim, config=None):
         super(LinClassifier, self).__init__()
@@ -740,6 +766,16 @@ class LinRegressor(nn.Module):
     Use simple linear regressor to predict selected expression levels or other continuous phenotypes.
     Input is entire latent space, or designated dimension(s).
     Expected to make latent space aligned along linear structure.
+    When config is None, default structure: Input --> Linear --> Activation --> Output.
+
+    :param input_dim: The dimensionality of the input data
+    :type input_dim: int
+    :param output_dim: The dimensionality of the output data
+    :type output_dim: int
+    :param config: A list of the module layer configuration dictionaries
+    :type config: list[dict],optional
+    :param output_activation_function: The activation function for the output layer, defaults to 'identity'
+    :type output_activation_function: Literal['relu', 'softmax','identity']
     """
 
     def __init__(self, input_dim, output_dim, config=None, output_activation_function='identity'):
