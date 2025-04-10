@@ -12,6 +12,19 @@ import tensorboardX
 
 
 class Logger(object):
+    """
+    SAKURA Pipeline Logging Controller
+
+    Handles multi-dimensional logging including:
+
+        - Real-time loss tracking via TensorBoard
+        - Latent space visualization exports
+        - Model configuration versioning
+        - Training checkpoint management
+
+    :param log_path: Root directory for all logging artifacts (default './logs/')
+    :param suppress_tensorboardX:
+    """
     def __init__(self, log_path='./logs/', suppress_tensorboardX=False):
 
         # Arguments

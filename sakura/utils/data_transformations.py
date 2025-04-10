@@ -29,7 +29,7 @@ class ToTensor(object):
     :type sample: pd.DataFrame, pd.Series, np.ndarray or scipy.sparse matrix
     :param input_type: Type of input data, can be 'gene' (gene expression)
         or 'pheno' (phenotype), defaults to 'gene'
-    :type input_type: Literal['gene','pheno']
+    :type input_type: Literal['gene','pheno'], optional
     :param force_tensor_type: Force output tensor to a specific data type,
         can be 'float', 'int' or 'double'
     :type force_tensor_type: Literal['float', 'int','double'], optional
@@ -84,11 +84,11 @@ class ToBinary(object):
     :param sample: Input data of shape (n_samples, n_features) to binarize
     :type sample: array-like or sparse matrix
     :param threshold: Values > threshold become 1, others 0, defaults to 1e-6
-    :type threshold: float
+    :type threshold: float, optional
     :param inverse: Whether to invert binary values (1 → 0, 0 → 1), defaults to False
-    :type inverse: bool
+    :type inverse: bool, optional
     :param scale_factor: Multiply final output by this value, defaults to 1.0
-    :type scale_factor: float
+    :type scale_factor: float, optional
 
     :return: Transformed binarized output data
     :rtype: numpy.ndarray or scipy.sparse matrix
@@ -113,7 +113,7 @@ class ToOnehot(object):
     :param sample: array-like
     :param order: Expected order of categories (unique values per feature), defaults to 'auto', where
         categories are determined automatically from the input data
-    :type order: ‘auto’ or a list of array-like
+    :type order: 'auto' or a list of array-like, optional
 
     :return: Transformed one-hot encoded data
     :rtype: array-like
@@ -140,13 +140,13 @@ class ToOrdinal(object):
     :type sample: array-like
     :param order: Expected order of categories (unique values per feature), defaults to 'auto', where
         categories are determined automatically from the input data
-    :type order: 'auto' or a list of array-like
+    :type order: 'auto' or a list of array-like, optional
     :param handle_unknown*: Strategy for handling unknown categories, defaults to 'use_encoded_value'
         which sets unknown categories to <unknown_value>
-    :type handle_unknown: Literal['error', 'use_encoded_value']
+    :type handle_unknown: Literal['error', 'use_encoded_value'], optional
     :param unknown_value: Encoded value to assign unknown categories, must be numerical if using
         'use_encoded_value' strategy, defaults to np.nan
-    :type unknown_value: int or np.nan
+    :type unknown_value: int or np.nan, optional
 
     .. note::
         **<handle_unknown>:** When set to ‘use_encoded_value’,
@@ -184,11 +184,11 @@ class ToKBins(object):
     :param sample: Input data of shape (n_samples, n_features) containing continuous features
     :type sample: array-like
     :param n_bins: The number of bins for all features or each feature to produce, defaults to 2 for all
-    :type n_bins: int or array-like of shape (n_features,)
+    :type n_bins: int or array-like of shape (n_features,), optional
     :param encode: Method used to encode the transformed result
-    :type encode: Literal['ordinal', 'onehot', 'onehot-dense']
+    :type encode: Literal['ordinal', 'onehot', 'onehot-dense'], optional
     :param strategy*: Strategy used to define the widths of the bins
-    :type strategy: Literal['quantile', 'uniform', 'kmeans']
+    :type strategy: Literal['quantile', 'uniform', 'kmeans'], optional
 
     :return: Transformed K-bins discretized data
     :rtype: numpy.ndarray or scipy.sparse matrix

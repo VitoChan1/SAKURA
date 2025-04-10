@@ -25,11 +25,11 @@ class Extractor(torch.nn.Module):
     :type pheno_config: dict[str, Any], optional
     :param main_lat_config: Model configuration settings for the main latent representation
         of the autoencoder backbone
-    :type main_lat_config: dict[str, Any]
+    :type main_lat_config: dict[str, Any], optional
     :param pre_encoder_config: Model configuration settings for the pre-encoder stage
     :type pre_encoder_config: dict[str, Any], optional
     :param verbose: Whether to enable verbose console logging, defaults to False
-    :type verbose: bool
+    :type verbose: bool, optional
 
     Architecture Composition:
         • pre_encoder (nn.Module): Raw input preprocessing/initial feature transformation
@@ -283,33 +283,33 @@ class Extractor(torch.nn.Module):
             M is number of gene
         :type batch: torch.Tensor
         :param forward_signature: Whether to forward signature supervision part, defaults to True
-        :type forward_signature: bool
+        :type forward_signature: bool, optional
         :param selected_signature: List of selected signatures to be forwarded,
-            None to forward all signatures
+            None to forward all signatures, optional
         :type selected_signature: list[str], optional
         :param forward_pheno: Whether to forward phenotype supervision part, defaults to True
-        :type forward_pheno: bool
+        :type forward_pheno: bool, optional
         :param selected_pheno: List of selected phenotypes to be forwarded,
             None to forward all phenotypes
         :type selected_pheno: list[str], optional
         :param forward_main_latent: Whether to forward main latent part, defaults to True
-        :type forward_main_latent: bool
+        :type forward_main_latent: bool, optional
         :param forward_reconstruction*: Whether to forward decoder reconstruction part, defaults to True
-        :type forward_reconstruction: bool
+        :type forward_reconstruction: bool, optional
         :param detach: Should the gradient be blocked from midway of the network
             as specified in <detach_from>, defaults to False
-        :type detach: bool
+        :type detach: bool, optional
         :param detach_from: Specific component from which the gradient should be blocked
             if <detach> is True
-        :type detach_from: Literal['pre_encoder', 'encoder'] or str
+        :type detach_from: Literal['pre_encoder', 'encoder'] or str, optional
 
         .. note::
             **<forward_reconstruction>:** The decoder reconstruction part could only be forwarded when
             all latent dimensions are forwarded.
 
             <detach_from> options:
-            - 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
-            - 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained).
+                - 'pre_encoder' (lat_pre will be detached, pre_encoder will not be trained);
+                - 'encoder' (main_lat, pheno_lat, signature_lat will be detached, neither pre-encoder nor encoder will be trained).
 
             **Gradient reverse layer** and **gradient neutralize layer** related computations are done
             in :mod:`model_controllers.extractor_controller`.

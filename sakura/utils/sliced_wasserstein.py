@@ -19,7 +19,7 @@ class SlicedWasserstein(object):
         :param embedding_dim: Dimensionality of the latent space
         :type embedding_dim: int
         :param num_samples: Number of random projection vectors to generate, defaults to 50
-        :type num_samples: int
+        :type num_samples: int, optional
 
         :return: Normalized projection vectors of shape (num_samples, embedding_dim)
         :rtype: torch.Tensor
@@ -67,12 +67,12 @@ class SlicedWasserstein(object):
         :type encoded_samples: torch.Tensor
         :param distribution_fn: Function that generates drawn distribution samples (args: batch_size, n_dim)
         :type distribution_fn: Callable
-        :param num_projections: Number of projections to approximate sliced wasserstein distance
-        :type num_projections: int
+        :param num_projections: Number of projections to approximate sliced wasserstein distance, defaults to 50
+        :type num_projections: int, optional
         :param p: Exponent for Wasserstein-p distance, defaults to 2
-        :type p: int
+        :type p: int, optional
         :param device: torch computation device, defaults to 'cpu'
-        :type device: Literal['cpu', 'cuda']
+        :type device: Literal['cpu', 'cuda'], optional
 
         :return: Sliced Wasserstrain distances of size (num_projections, 1)
         :rtype: torch.Tensor

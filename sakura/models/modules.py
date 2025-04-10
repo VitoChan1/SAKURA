@@ -62,22 +62,23 @@ class FCDecoder(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type output_dim: int
     :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
-    :type hidden_neurons: int or list[int]
+    :type hidden_neurons: int or list[int], optional
     :param hidden_layers: The number of layer(s) in the network, defaults to 3
-    :type hidden_layers: int
+    :type hidden_layers: int, optional
     :param output_activation_function: The activation function for the output layer, defaults to 'relu'
-    :type output_activation_function: Literal['relu', 'softmax','identity']
+    :type output_activation_function: Literal['relu', 'softmax','identity'], optional
     :param dropout: Whether to apply dropout regularization, defaults to False
-    :type dropout: bool
+    :type dropout: bool, optional
     :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-    :type dropout_input: bool
+    :type dropout_input: bool, optional
     :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-    :type dropout_input_p: float
+    :type dropout_input_p: float, optional
     :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-    :type dropout_hidden: bool
+    :type dropout_hidden: bool, optional
     :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+    :type dropout_hidden_p: float, optional
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict],optional, optional
     """
     def __init__(self, input_dim, output_dim,
                  hidden_neurons=50, hidden_layers=3,
@@ -188,20 +189,21 @@ class FCPreEncoder(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type input_dim: int
     :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
-    :type hidden_neurons: int or list[int]
+    :type hidden_neurons: int or list[int], optional
     :param hidden_layers: The number of layer(s) in the network, defaults to 2
-    :type hidden_layers: int
+    :type hidden_layers: int, optional
     :param dropout: Whether to apply dropout regularization, defaults to False
-    :type dropout: bool
+    :type dropout: bool, optional
     :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-    :type dropout_input: bool
+    :type dropout_input: bool, optional
     :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-    :type dropout_input_p: float
+    :type dropout_input_p: float, optional
     :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-    :type dropout_hidden: bool
+    :type dropout_hidden: bool, optional
     :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+    :type dropout_hidden_p: float, optional
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict], optional
     """
     def __init__(self, input_dim: int, output_dim: int,
                  hidden_neurons=None, hidden_layers=2,
@@ -308,11 +310,11 @@ class FCCompressor(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type input_dim: int
     :param hidden_neurons: The number of neurons in each hidden layer, defaults to 50
-    :type hidden_neurons: int
+    :type hidden_neurons: int, optional
     :param hidden_layers: The number of layer(s) in the network, defaults to 1
-    :type hidden_layers: int
+    :type hidden_layers: int, optional
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict], optional
     """
 
     def __init__(self, input_dim: int, output_dim: int,
@@ -412,20 +414,21 @@ class FCClassifier(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type output_dim: int
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict], optional
     :param hidden_neurons: The number of neurons in each hidden layer, defaults to 5
-    :type hidden_neurons: int or list[int]
+    :type hidden_neurons: int or list[int], optional
     :param hidden_layers: The number of layer(s) in the network
-    :type hidden_layers: int
+    :type hidden_layers: int, optional
     :param dropout: Whether to apply dropout regularization, defaults to False
-    :type dropout: bool
+    :type dropout: bool, optional
     :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-    :type dropout_input: bool
+    :type dropout_input: bool, optional
     :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-    :type dropout_input_p: float
+    :type dropout_input_p: float, optional
     :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-    :type dropout_hidden: bool
+    :type dropout_hidden: bool, optional
     :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+    :type dropout_hidden_p: float, optional
     """
 
     def __init__(self, input_dim, output_dim,
@@ -590,22 +593,23 @@ class FCRegressor(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type output_dim: int
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict], optional
     :param hidden_neurons: The number of neurons in each hidden layer, defaults to 5
-    :type hidden_neurons: int or list[int]
+    :type hidden_neurons: int or list[int], optional
     :param hidden_layers: The number of layer(s) in the network
-    :type hidden_layers: int
+    :type hidden_layers: int, optional
     :param output_activation_function: The activation function for the output layer, defaults to 'identity'
-    :type output_activation_function: Literal['relu', 'softmax','identity']
+    :type output_activation_function: Literal['relu', 'softmax','identity'], optional
     :param dropout: Whether to apply dropout regularization, defaults to False
-    :type dropout: bool
+    :type dropout: bool, optional
     :param dropout_input: Whether to apply dropout to the input layer, defaults to False
-    :type dropout_input: bool
+    :type dropout_input: bool, optional
     :param dropout_input_p: The probability of dropout for the input layer, defaults to 0.5
-    :type dropout_input_p: float
+    :type dropout_input_p: float, optional
     :param dropout_hidden: Whether to apply dropout to the hidden layer, defaults to False
-    :type dropout_hidden: bool
+    :type dropout_hidden: bool, optional
     :param dropout_hidden_p: The probability of dropout for the hidden layer, defaults to 0.5
+    :type dropout_hidden_p: float, optional
     """
 
     def __init__(self, input_dim, output_dim, config=None,
@@ -730,7 +734,7 @@ class LinClassifier(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type output_dim: int
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict], optional
     """
     def __init__(self, input_dim, output_dim, config=None):
         super(LinClassifier, self).__init__()
@@ -775,9 +779,9 @@ class LinRegressor(nn.Module):
     :param output_dim: The dimensionality of the output data
     :type output_dim: int
     :param config: A list of the module layer configuration dictionaries
-    :type config: list[dict],optional
+    :type config: list[dict], optional
     :param output_activation_function: The activation function for the output layer, defaults to 'identity'
-    :type output_activation_function: Literal['relu', 'softmax','identity']
+    :type output_activation_function: Literal['relu', 'softmax','identity'], optional
     """
 
     def __init__(self, input_dim, output_dim, config=None, output_activation_function='identity'):

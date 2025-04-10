@@ -31,9 +31,9 @@ class SCRNASeqCountDataDask(Dataset):
     :param pheno_meta: A dictionary contains definition and configurations of phenotype data
     :type pheno_meta: dict[str, Any], optional
     :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
-    :type mode: str
+    :type mode: str, optional
     :param verbose: Whether to enable verbose console logging, defaults to False
-    :type verbose: bool
+    :type verbose: bool, optional
 
     **Expected inputs:**
     Unlike rna_count, which directly accepts the Seurat compatible datasheets (i.e. row gene, col cell)

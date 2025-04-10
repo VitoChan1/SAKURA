@@ -21,7 +21,7 @@ class ReverseLayerF(Function):
     """
 
     @staticmethod
-    def forward(ctx, input_, alpha_=1.0):
+    def forward(ctx, input_, alpha_= 1.0):
         """
         Forward pass for a custom autograd operation with gradient scaling.
 
@@ -30,7 +30,7 @@ class ReverseLayerF(Function):
         :param `input_`: Input tensor of shape (N, \*) for forward pass, where \* means number of dimensions
         :type `input_`: torch.Tensor
         :param `alpha_`: Gradient scaling factor, defaults to 1.0 (no scaling)
-        :type `alpha_`: float
+        :type `alpha_`: float, optional
 
         :return: Output tensor identical to `input_` (shape preserved)
         :rtype: torch.Tensor

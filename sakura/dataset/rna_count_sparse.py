@@ -35,7 +35,7 @@ class SCRNASeqCountDataSparse(Dataset):
     :param pheno_df_dtype: Pandas dtype applied to phenotype data, either the whole dataframe or individual columns
     :type pheno_df_dtype: dtype or dict of {Hashable dtype}, optional
     :param pheno_df_na_filter*: Detect missing value markers (empty strings and the value of na_values), defaults to True
-    :type pheno_df_na_filter: bool
+    :type pheno_df_na_filter: bool, optional
     :param gene_meta_json_path: Path to the genotype meta JSON file
     :type gene_meta_json_path: str, optional
     :param pheno_meta_json_path: Path to the phenotype meta JSON file
@@ -45,9 +45,9 @@ class SCRNASeqCountDataSparse(Dataset):
     :param pheno_meta: A dictionary contains definition and configurations of phenotype data
     :type pheno_meta: dict[str, Any], optional
     :param mode: data export option ['all','key', or others] of the dataset, defaults to 'all'.
-    :type mode: str
+    :type mode: str, optional
     :param verbose: Whether to enable verbose console logging, defaults to False
-    :type verbose: bool
+    :type verbose: bool, optional
 
     **Expected inputs:**
 
@@ -281,18 +281,20 @@ class SCRNASeqCountDataSparse(Dataset):
         :type item: list or int
         :param include_raw: Whether to export the unprocessed, subset expression matrix and
             phenotype data frame, defaults to True
-        :type include_raw: bool
+        :type include_raw: bool, optional
         :param include_proc: Whether to export the processed data (following procedures specified in the configs),
             defaults to True
-        :type include_proc: bool
+        :type include_proc: bool, optional
         :param include_cell_key: Should the names/keys of the cells be exported
-        :type include_cell_key: bool
+        :type include_cell_key: bool, optional
+        :param include_item: Whether to export the input index of the selected data
+        :type include_item: bool, optional
 
         :return: A dictionary containing data of the specified item(s) from the dataset
         :rtype: dict[str, Any]
         """
 
-        # Type adaptation: when 'item' is a single index, convert it to list
+        # Type adaptation: when <item> is a single index, convert it to list
         if type(item) is int:
             item = [item]
 

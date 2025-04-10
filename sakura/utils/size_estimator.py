@@ -22,10 +22,10 @@ class SizeEstimator(object):
 
     :param model: Model to analyze
     :type model: torch.nn.Module
-    :param input_size: Input dimensions (batch, channels, height, width)
-    :type input_size: tuple
+    :param input_size: Input dimensions (batch, channels, height, width), defaults to (1, 1, 32, 32)
+    :type input_size: tuple, optional
     :param bits: Bit precision for memory calculations, defaults to 32
-    :type bits: int
+    :type bits: int, optional
     """
 
     def __init__(self, model, input_size=(1, 1, 32, 32), bits=32):

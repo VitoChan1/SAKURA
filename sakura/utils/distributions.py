@@ -19,9 +19,9 @@ def swiss_roll(batch_size, n_dim=2, n_labels=10, label_indices=None):
     :param batch_size: Number of samples to generate
     :type batch_size: int
     :param n_dim: Dimension of output samples, must be 2
-    :type n_dim: Literal[2]
-    :param n_labels: Number of distinct label segments in the spiral
-    :type n_labels: int
+    :type n_dim: Literal[2], optional
+    :param n_labels: Number of distinct label segments in the spiral, defaults to 10
+    :type n_labels: int, optional
     :param label_indices: List of label indices (0 <= index < n_labels)
         for each batch sample, randomly assigned if none provided
     :type label_indices: list[int], optional
@@ -59,13 +59,13 @@ def gaussian_mixture(batch_size, n_dim=2, n_labels=10, x_var=0.5, y_var=0.1, lab
     :param batch_size: Number of samples to generate
     :type batch_size: int
     :param n_dim: Dimension of output samples, must be 2
-    :type n_dim: Literal[2]
-    :param n_labels: Number of Gaussian components arranged around the circle
-    :type n_labels: int
-    :param x_var: Variance along the x-axis for each component
-    :type x_var: float
-    :param y_var: Variance along the y-axis for each component
-    :type y_var: float
+    :type n_dim: Literal[2], optional
+    :param n_labels: Number of Gaussian components arranged around the circle, defaults to 10
+    :type n_labels: int, optional
+    :param x_var: Variance along the x-axis for each component, defaults to 0.5
+    :type x_var: float, optional
+    :param y_var: Variance along the y-axis for each component, defaults to 0.1
+    :type y_var: float, optional
     :param label_indices: List of label indices (0 <= index < n_labels)
             for each batch sample, randomly assigned if none provided
     :type label_indices: list[int], optional
@@ -125,7 +125,7 @@ def rand_ring2d(batch_size, n_dim=2):
     :param batch_size: Number of samples to generate
     :type batch_size: int
     :param n_dim: Dimension of output samples, should be 2
-    :type n_dim: Literal[2]
+    :type n_dim: Literal[2], optional
 
     :return: Tensor of shape (batch_size, 2) with ring samples
     :rtype: torch.FloatTensor
@@ -148,13 +148,13 @@ def rand_uniform(batch_size, n_dim=2, low = -1., high = 1.,
     :param batch_size: Number of batch samples
     :type batch_size: int
     :param n_dim: Number of latent dimension, defaults to 2
-    :type n_dim: int
-    :param low: Lower bound of uniform distribution (for each dimension)
-    :type low: float
-    :param high: Upper bound of uniform distribution (for each dimension)
-    :type high: float
-    :param n_labels: Number of labels to consider in supervision, when n_labels=1, supervision is off
-    :type n_labels: int
+    :type n_dim: int, optional
+    :param low: Lower bound of uniform distribution (for each dimension), defaults to -1.
+    :type low: float, optional
+    :param high: Upper bound of uniform distribution (for each dimension), defaults to 1.
+    :type high: float, optional
+    :param n_labels: Number of labels to consider in supervision, defaults to 1, where supervision is off
+    :type n_labels: int, optional
     :param label_offsets: Offsets for each label cluster
     :type label_offsets: list[list[float]], optional
     :param label_indices: List of label indices (0 <= index < n_labels)
