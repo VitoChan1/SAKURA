@@ -23,14 +23,16 @@ class ReverseLayerF(Function):
     @staticmethod
     def forward(ctx, input_, alpha_=1.0):
         """
+        Forward pass for a custom autograd operation with gradient scaling.
+
         :param ctx: Context object to save tensors for backward computation
         :type ctx: torch.autograd.function.FunctionCtx
-        :param input_: Input tensor of shape (N, *) for forward pass, where * means number of dimensions
-        :type input_: torch.Tensor
-        :param alpha_: Gradient scaling factor, defaults to 1.0 (no scaling)
-        :type alpha_: float
+        :param `input_`: Input tensor of shape (N, *) for forward pass, where * means number of dimensions
+        :type `input_`: torch.Tensor
+        :param `alpha_`: Gradient scaling factor, defaults to 1.0 (no scaling)
+        :type `alpha_`: float
 
-        :return: Output tensor identical to input_ (shape preserved)
+        :return: Output tensor identical to `input_` (shape preserved)
         :rtype: torch.Tensor
         """
         alpha_ = tensor(alpha_, requires_grad=False)
@@ -41,12 +43,14 @@ class ReverseLayerF(Function):
     @staticmethod
     def backward(ctx, grad_output):  # pragma: no cover
         """
+        Backward pass for the custom autograd operation with gradient scaling.
+
         :param ctx: Context object containing saved tensors from forward pass
         :type ctx: torch.autograd.function.FunctionCtx
         :param grad_output: Upstream gradient of shape (N, *), matching the forward input dimensions
         :type grad_output: torch.Tensor
         :return:
-            - grad_input: Gradient of input_ scaled by -alpha_ (shape preserved)
+            - grad_input: Gradient of `input_` scaled by -`alpha_` (shape preserved)
             - None: Placeholder for alpha gradient (not calculated)
 
         :rtype: tuple (torch.Tensor, None)
@@ -72,10 +76,12 @@ class NeutralizeLayerF(Function):
     @staticmethod
     def forward(ctx, input_):
         """
+        Forward pass for gradient neutralization layer (identity transform).
+
         :param ctx: Context object containing saved tensors from forward pass
         :type ctx: torch.autograd.function.FunctionCtx
-        :param input_: Input tensor of shape (N, *) for forward pass, where * means number of dimensions
-        :type input_: torch.Tensor
+        :param `input_`: Input tensor of shape (N, *) for forward pass, where * means number of dimensions
+        :type `input_`: torch.Tensor
 
         :return: Output tensor identical to input_ (shape preserved)
         :rtype: torch.Tensor
@@ -87,6 +93,8 @@ class NeutralizeLayerF(Function):
     @staticmethod
     def backward(ctx, grad_output):  # pragma: no cover
         """
+        Backward pass that nullifies upstream gradients.
+
         :param ctx: Context object containing saved tensors from forward pass
         :type ctx: torch.autograd.function.FunctionCtx
         :param grad_output: Upstream gradient of shape (N, *), matching the forward input dimensions
