@@ -23,7 +23,7 @@ def swiss_roll(batch_size, n_dim=2, n_labels=10, label_indices=None):
     :param n_labels: Number of distinct label segments in the spiral
     :type n_labels: int
     :param label_indices: List of label indices (0 <= index < n_labels)
-            for each batch sample, randomly assigned if none provided
+        for each batch sample, randomly assigned if none provided
     :type label_indices: list[int], optional
 
     :return: Tensor of shape (batch_size, n_dim) with Swiss roll samples
@@ -158,7 +158,7 @@ def rand_uniform(batch_size, n_dim=2, low = -1., high = 1.,
     :param label_offsets: Offsets for each label cluster
     :type label_offsets: list[list[float]], optional
     :param label_indices: List of label indices (0 <= index < n_labels)
-            for each batch sample, randomly assigned if none provided
+        for each batch sample, randomly assigned if none provided
     :type label_indices: list[int], optional
 
     :return: Tensor of shape (batch_size, n_dim) with uniform samples

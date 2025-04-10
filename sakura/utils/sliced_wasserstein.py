@@ -61,7 +61,7 @@ class SlicedWasserstein(object):
                                     p=2,
                                     device='cpu'):
         """
-        Compute SWD between encoded samples and distribution function samples
+        Compute SWD between encoded samples and distribution function samples.
 
         :param encoded_samples: Samples from encoded distribution
         :type encoded_samples: torch.Tensor

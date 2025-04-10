@@ -12,25 +12,23 @@ from torch.autograd import Variable
 
 class SizeEstimator(object):
     """
-    Estimates memory consumption of PyTorch models at different stages of operation.
+    Estimates memory consumption of PyTorch models
 
     Calculates:
-    - Parameter storage requirements
-    - Activation memory for forward pass
-    - Gradient memory for backward pass
-    - Input tensor memory
+        - Parameter storage requirements
+        - Activation memory for forward pass
+        - Gradient memory for backward pass
+        - Input tensor memory
+
+    :param model: Model to analyze
+    :type model: torch.nn.Module
+    :param input_size: Input dimensions (batch, channels, height, width)
+    :type input_size: tuple
+    :param bits: Bit precision for memory calculations, defaults to 32
+    :type bits: int
     """
 
     def __init__(self, model, input_size=(1, 1, 32, 32), bits=32):
-        """
-        :param model: Model to analyze
-        :type model: torch.nn.Module
-        :param input_size: Input dimensions (batch, channels, height, width)
-        :type input_size: tuple
-        :param bits: Bit precision for memory calculations, defaults to 32
-        :type bits: int
-        """
-
         self.model = model
         self.input_size = input_size
         self.bits = bits
@@ -119,7 +117,7 @@ class SizeEstimator(object):
         Calculate total memory requirements.
 
         :return: Memory requirement estimation in megabytes and bits
-        :rtype: tuple
+        :rtype: tuple (float, float)
         """
 
         self.get_parameter_sizes()
