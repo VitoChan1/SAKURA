@@ -3,7 +3,6 @@ Installation
 SAKURA is developed using python~3.9 and PyTorch 1.13.1.
 
 .. note::
-
     To avoid potential dependency conflicts, installing within a conda environment is recommended.
 
 .. _environment:
@@ -21,9 +20,8 @@ Activate the environment:
 
     conda activate sakura
 
-
 .. _installation:
-Install SAKURA via clonning
+Install SAKURA via cloning
 -------------------------------
 Clone the repository to your local directory. Then,
 

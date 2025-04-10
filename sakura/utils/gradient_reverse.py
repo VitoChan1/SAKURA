@@ -27,7 +27,7 @@ class ReverseLayerF(Function):
 
         :param ctx: Context object to save tensors for backward computation
         :type ctx: torch.autograd.function.FunctionCtx
-        :param `input_`: Input tensor of shape (N, *) for forward pass, where * means number of dimensions
+        :param `input_`: Input tensor of shape (N, \*) for forward pass, where \* means number of dimensions
         :type `input_`: torch.Tensor
         :param `alpha_`: Gradient scaling factor, defaults to 1.0 (no scaling)
         :type `alpha_`: float
@@ -47,7 +47,7 @@ class ReverseLayerF(Function):
 
         :param ctx: Context object containing saved tensors from forward pass
         :type ctx: torch.autograd.function.FunctionCtx
-        :param grad_output: Upstream gradient of shape (N, *), matching the forward input dimensions
+        :param grad_output: Upstream gradient of shape (N, \*), matching the forward input dimensions
         :type grad_output: torch.Tensor
         :return:
             - grad_input: Gradient of `input_` scaled by -`alpha_` (shape preserved)
@@ -80,10 +80,10 @@ class NeutralizeLayerF(Function):
 
         :param ctx: Context object containing saved tensors from forward pass
         :type ctx: torch.autograd.function.FunctionCtx
-        :param `input_`: Input tensor of shape (N, *) for forward pass, where * means number of dimensions
+        :param `input_`: Input tensor of shape (N, \*) for forward pass, where \* means number of dimensions
         :type `input_`: torch.Tensor
 
-        :return: Output tensor identical to input_ (shape preserved)
+        :return: Output tensor identical to `input_` (shape preserved)
         :rtype: torch.Tensor
         """
         ctx.save_for_backward(input_)
@@ -97,9 +97,10 @@ class NeutralizeLayerF(Function):
 
         :param ctx: Context object containing saved tensors from forward pass
         :type ctx: torch.autograd.function.FunctionCtx
-        :param grad_output: Upstream gradient of shape (N, *), matching the forward input dimensions
+        :param grad_output: Upstream gradient of shape (N, \*), matching the forward input dimensions
         :type grad_output: torch.Tensor
-        :return: - grad_input: Zero-valued gradient tensor
+        :return:
+            - grad_input: Zero-valued gradient tensor
             - None: Placeholder for unused gradient
         :rtype: tuple (torch.Tensor, None)
         """
