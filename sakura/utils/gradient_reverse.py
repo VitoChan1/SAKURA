@@ -13,10 +13,10 @@ class ReverseLayerF(Function):
     Custom autograd class that reverses and scales gradients during backward pass
 
     During forward:
-    - Acts as identity operation (returns input unchanged)
+        - Acts as identity operation (returns input unchanged)
     During backward:
-    - Reverses gradient direction by multiplying with negative alpha;
-    - Scales gradients by alpha coefficient
+        - Reverses gradient direction by multiplying with negative alpha;
+        - Scales gradients by alpha coefficient
 
     """
 
@@ -45,8 +45,10 @@ class ReverseLayerF(Function):
         :type ctx: torch.autograd.function.FunctionCtx
         :param grad_output: Upstream gradient of shape (N, *), matching the forward input dimensions
         :type grad_output: torch.Tensor
-        :return: - grad_input: Gradient of input_ scaled by -alpha_ (shape preserved)
+        :return:
+            - grad_input: Gradient of input_ scaled by -alpha_ (shape preserved)
             - None: Placeholder for alpha gradient (not calculated)
+
         :rtype: tuple (torch.Tensor, None)
         """
         grad_input = None
@@ -58,12 +60,12 @@ class ReverseLayerF(Function):
 
 class NeutralizeLayerF(Function):
     """
-    Custom autograd Function that nullifies gradients during backward pass.
+    Custom autograd Function that nullifies gradients during backward pass
 
     During forward:
-    - Acts as identity operation (returns input unchanged)
+        - Acts as identity operation (returns input unchanged)
     During backward:
-    - Returns zero gradients, stopping gradient flow
+        - Returns zero gradients, stopping gradient flow
 
     """
 

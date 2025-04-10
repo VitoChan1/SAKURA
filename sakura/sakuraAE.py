@@ -875,13 +875,13 @@ class sakuraAE(object):
         :param perform_checkpoint: Whether to checkpoint the model a certain tick interval, defaults to False
         :type perform_checkpoint: bool
         :param checkpoint_segment: Tick interval of model checkpoint, defaults to 2000
-        :type checkpoint_segment int
+        :type checkpoint_segment: int
         :param checkpoint_prefix: Prefix of checkpoint files
         :type checkpoint_prefix: str
         :param checkpoint_save_arch: Should model architecture be checkpointed, defaults to False
         :type checkpoint_save_arch: bool
-        :param loss_prog_on_test: A dictionary specifying progressive loss weights to use
-            during testing when prog_loss_weight_mode is 'on_test', should contain keys: 'prog_main',
+        :param loss_prog_on_test: A dictionary specifying progressive loss weights to use \
+            during testing when prog_loss_weight_mode is 'on_test', should contain keys: 'prog_main', \
             'train_pheno','selected_pheno','train_signature' and 'selected_signature'
         :type loss_prog_on_test: dict[str, Any], optional
         :param resume: Whether to resume from saved training session, defaults to False
@@ -889,11 +889,11 @@ class sakuraAE(object):
         :param resume_dict: Session state dictionary used for resuming previous training
         :type resume_dict: dict[str, Any], optional
 
-        :return: None
-
         .. note::
             When epoch loss progressing is on, the progression will incur only
             for selected loss when an epoch ends (tick reach end).
+
+        :return: None
         """
         split_configs = self.__lint_split_configs(split_configs)
 
@@ -1642,23 +1642,22 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-
             Expected <insert_config> structure:
 
             .. code-block::
 
-            {
-                'module_name': {
-                    "ext_model_config_path": (str) - Path to the external model's architecture config (JSON)
-                    "ext_signature_config_path": (str) - Path to the signature config (JSON)
-                    "ext_pheno_config_path": (str) - Path to the phenotype config (JSON)
-                    "ext_checkpoint_path": (str) - Path to the external model's checkpoint file
-                    "source": (str) -  Source component type in the external model (e.g., "decoder", "pheno_models", "signature_regressors")
-                    "source_name": (Optional[str]) - Name of the specific component (if applicable)
-                    "destination_type": (str) - Target component type in the current model  (e.g., "decoder", "pheno", "signature")
-                    "destination_name": (Optional[str]) - Name of the target component (if applicable)
+                {
+                    'module_name': {
+                        "ext_model_config_path": (str) - Path to the external model's architecture config (JSON)
+                        "ext_signature_config_path": (str) - Path to the signature config (JSON)
+                        "ext_pheno_config_path": (str) - Path to the phenotype config (JSON)
+                        "ext_checkpoint_path": (str) - Path to the external model's checkpoint file
+                        "source": (str) -  Source component type in the external model (e.g., "decoder", "pheno_models", "signature_regressors")
+                        "source_name": (Optional[str]) - Name of the specific component (if applicable)
+                        "destination_type": (str) - Target component type in the current model  (e.g., "decoder", "pheno", "signature")
+                        "destination_name": (Optional[str]) - Name of the target component (if applicable)
                     }
-            }
+                }
 
         """
         if verbose:

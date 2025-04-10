@@ -303,9 +303,6 @@ class Extractor(torch.nn.Module):
             if <detach> is True
         :type detach_from: Literal['pre_encoder', 'encoder'] or str
 
-        :return: a dictionary containing hierarchical outputs with keys of model forwarding
-        :rtype: dict[str, torch.Tensor]
-
         .. note::
             **<forward_reconstruction>:** The decoder reconstruction part could only be forwarded when
             all latent dimensions are forwarded.
@@ -316,6 +313,9 @@ class Extractor(torch.nn.Module):
 
             **Gradient reverse layer** and **gradient neutralize layer** related computations are done
             in :mod:`model_controllers.extractor_controller`.
+
+        :return: a dictionary containing hierarchical outputs with keys of model forwarding
+        :rtype: dict[str, torch.Tensor]
         """
         # Forward Pre Encoder
         lat_pre = self.model['pre_encoder'](batch)

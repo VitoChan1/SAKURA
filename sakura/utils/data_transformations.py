@@ -148,14 +148,14 @@ class ToOrdinal(object):
         'use_encoded_value' strategy, defaults to np.nan
     :type unknown_value: int or np.nan
 
-    :return: Transformed ordinal encoded data
-    :rtype: array-like
-
     .. note::
         **<handle_unknown>:** When set to ‘use_encoded_value’,
         the encoded value of unknown categories will be set to the value given for the parameter;
         When set to ‘error’, an error will be raised in case an unknown categorical feature is
         present during transform.
+
+    :return: Transformed ordinal encoded data
+    :rtype: array-like
     """
 
     def __call__(self, sample, order='auto', handle_unknown='use_encoded_value', unknown_value=np.nan):
