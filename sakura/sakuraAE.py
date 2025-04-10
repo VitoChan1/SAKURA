@@ -881,8 +881,8 @@ class sakuraAE(object):
         :param checkpoint_save_arch: Should model architecture be checkpointed, defaults to False
         :type checkpoint_save_arch: bool
         :param loss_prog_on_test: A dictionary specifying progressive loss weights to use
-            during testing when prog_loss_weight_mode is 'on_test', should contain keys:
-            'prog_main','train_pheno','selected_pheno','train_signature' and 'selected_signature'
+            during testing when prog_loss_weight_mode is 'on_test', should contain keys: 'prog_main',
+            'train_pheno','selected_pheno','train_signature' and 'selected_signature'
         :type loss_prog_on_test: dict[str, Any], optional
         :param resume: Whether to resume from saved training session, defaults to False
         :type resume: bool
@@ -1642,7 +1642,12 @@ class sakuraAE(object):
         :return: None
 
         .. note::
-            Expected <insert_config> structure:{
+
+            Expected <insert_config> structure:
+
+            .. code-block::
+
+            {
                 'module_name': {
                     "ext_model_config_path": (str) - Path to the external model's architecture config (JSON)
                     "ext_signature_config_path": (str) - Path to the signature config (JSON)
@@ -1653,7 +1658,8 @@ class sakuraAE(object):
                     "destination_type": (str) - Target component type in the current model  (e.g., "decoder", "pheno", "signature")
                     "destination_name": (Optional[str]) - Name of the target component (if applicable)
                     }
-                }
+            }
+
         """
         if verbose:
             logger.debug('Inserting external modules...')

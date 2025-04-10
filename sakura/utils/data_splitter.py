@@ -1,14 +1,18 @@
 """
-Various Data splitters
+Composable dataset splitting utilities
 """
 
 import numpy as np
 
 class DataSplitter(object):
+    """
+    Class for creating dataset splits using label-based grouping
+    """
 
     def auto_random_k_bin_labelling(self, base: np.ndarray, k: int, seed=None) -> np.ndarray:
         """
         Obtain a label vector containing 1~k for included points, 0 for not included points.
+
         This function utilizes k labels to prepare dataset usage by allowing the selection of data.
 
         :param base: The predefined label vector to work with
@@ -63,6 +67,7 @@ class DataSplitter(object):
         """
         Obtain a split code from label vector, points labelled from 1~k are considered as selected (1),
         otherwise not selected (0).
+
         Useful when determining overall train/test split directly from predefined labels.
 
         :param base: The predefined label vector to work with
@@ -90,10 +95,12 @@ class DataSplitter(object):
 
     def get_incremental_train_test_split(self, base: np.ndarray, k: int) -> dict:
         """
-        Obtain 2 split codes from label vector, points labelled from 1~k are considered as train (1 in first vector),
-        rest of selected (non-zero) cells are test(1 in second vector),
-        unselected points remain unchanged (0 in all vectors)
-        Useful when planning to increase points in supervision incrementally (e.g. select 30% cells with known certain known labels)
+        Obtain 2 split codes from label vector, points labelled from 1~k
+        are considered as train (1 in first vector), rest of selected (non-zero)
+        cells are test(1 in second vector), unselected points remain unchanged (0 in all vectors).
+
+        Useful when planning to increase points in supervision incrementally.
+        (e.g. select 30% cells with known certain known labels)
 
         :param base: The predefined label vector to work with
         :type base: np.ndarray[base.dtype, np.integer]
@@ -151,7 +158,8 @@ class DataSplitter(object):
 
     def auto_random_k_fold_cv_split(self, base: np.ndarray, k: int, seed=None):
         """
-        Obtain 2*k split codes based on random K-Fold split, where train or test are labelled as 1 (corresp.)
+        Obtain 2*k split codes based on random K-Fold split, where train or test are labelled as 1 (corresp.).
+
         Useful when planning for a K-Fold cross validation.
 
         :param base: The predefined label vector to work with, 0: not included, 1: included

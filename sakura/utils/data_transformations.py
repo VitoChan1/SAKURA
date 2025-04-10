@@ -1,5 +1,5 @@
 """
-Various Data transformations
+Various data transformations utilities
 """
 
 import numpy as np
@@ -13,29 +13,32 @@ from packaging import version
 
 class ToTensor(object):
     """
-    Convert input data to PyTorch Tensors.
+    Callable class to convert input data to PyTorch Tensors
+
     Handles input-specific transformations such as transposing gene data or adjusting dimensions.
+
     For 'gene' input:
+
         - DataFrames are transposed (genes x samples → samples x genes).
         - Series become 2D tensors (1 sample x genes).
         - Sparse matrices are densified.
+
     For 'pheno' input, no transpose is applied.
+
+    :param sample: Input data to convert
+    :type sample: pd.DataFrame, pd.Series, np.ndarray or scipy.sparse matrix
+    :param input_type: Type of input data, can be 'gene' (gene expression)
+        or 'pheno' (phenotype), defaults to 'gene'
+    :type input_type: Literal['gene','pheno']
+    :param force_tensor_type: Force output tensor to a specific data type,
+        can be 'float', 'int' or 'double'
+    :type force_tensor_type: Literal['float', 'int','double'], optional
+
+    :return: Converted tensor
+    :rtype: torch.Tensor
     """
 
     def __call__(self, sample, input_type='gene', force_tensor_type=None):
-        """
-        :param sample: Input data to convert
-        :type sample: pd.DataFrame, pd.Series, np.ndarray or scipy.sparse matrix
-        :param input_type: Type of input data, can be 'gene' (gene expression)
-            or 'pheno' (phenotype), defaults to 'gene'
-        :type input_type: Literal['gene','pheno']
-        :param force_tensor_type: Force output tensor to a specific data type,
-            can be 'float', 'int' or 'double'
-        :type force_tensor_type: Literal['float', 'int','double'], optional
-
-        :return: Converted tensor
-        :rtype: torch.Tensor
-        """
         ret = None
         #print(type(sample))
         #print(sample)
@@ -73,25 +76,25 @@ class ToTensor(object):
 
 class ToBinary(object):
     """
-    Convert input data into binary form (0 or 1) using sklearn.preprocessing Binarizer.
+    Convert input data into binary form (0 or 1) using sklearn Binarizer
+
     To handle floating point error, a threshold (epsilon) is applied to check
     if the value should be classified as 0 or 1.
+
+    :param sample: Input data of shape (n_samples, n_features) to binarize
+    :type sample: array-like or sparse matrix
+    :param threshold: Values > threshold become 1, others 0, defaults to 1e-6
+    :type threshold: float
+    :param inverse: Whether to invert binary values (1 → 0, 0 → 1), defaults to False
+    :type inverse: bool
+    :param scale_factor: Multiply final output by this value, defaults to 1.0
+    :type scale_factor: float
+
+    :return: Transformed binarized output data
+    :rtype: numpy.ndarray or scipy.sparse matrix
     """
 
     def __call__(self, sample, threshold=1e-6, inverse=False, scale_factor=1.0):
-        """
-        :param sample: Input data of shape (n_samples, n_features) to binarize
-        :type sample: array-like or sparse matrix
-        :param threshold: Values > threshold become 1, others 0, defaults to 1e-6
-        :type threshold: float
-        :param inverse: Whether to invert binary values (1 → 0, 0 → 1), defaults to False
-        :type inverse: bool
-        :param scale_factor: Multiply final output by this value, defaults to 1.0
-        :type scale_factor: float
-
-        :return: Transformed binarized output data
-        :rtype: numpy.ndarray or scipy.sparse matrix
-        """
         binarizer = skprep.Binarizer(threshold=threshold).fit(sample)
         ret = binarizer.transform(sample)
         if inverse:
@@ -102,21 +105,21 @@ class ToBinary(object):
 
 class ToOnehot(object):
     """
-    Convert categorical labels to one-hot encodings using sklearn.preprocessing OneHotEncoder.
+    Callable class to convert categorical labels to one-hot encodings using sklearn.preprocessing OneHotEncoder
+
     Useful when the loss is not compatible directly with class labels and expected to be used on Phenotype only.
+
+    :param sample: Input data of shape (n_samples, n_features) to determine the categories of each feature
+    :param sample: array-like
+    :param order: Expected order of categories (unique values per feature), defaults to 'auto', where
+        categories are determined automatically from the input data
+    :type order: ‘auto’ or a list of array-like
+
+    :return: Transformed one-hot encoded data
+    :rtype: array-like
     """
 
     def __call__(self, sample, order='auto'):
-        """
-        :param sample: Input data of shape (n_samples, n_features) to determine the categories of each feature
-        :param sample: array-like
-        :param order: Expected order of categories (unique values per feature), defaults to 'auto', where
-            categories are determined automatically from the input data
-        :type order: ‘auto’ or a list of array-like
-
-        :return: Transformed one-hot encoded data
-        :rtype: array-like
-        """
         # Adaptations
         if order != 'auto':
             if type(order) is list:
@@ -128,33 +131,34 @@ class ToOnehot(object):
 
 class ToOrdinal(object):
     """
-    Convert categorical labels to an integer array using sklearn.preprocessing OrdinalEncoder.
+    Callable class to convert categorical labels to an integer array
+    using sklearn OrdinalEncoder
+
     Useful for losses like torch.nn.CrossEntropyLoss and expected to be used on Phenotype.
+
+    :param sample: Input data of shape (n_samples, n_features) containing categorical features
+    :type sample: array-like
+    :param order: Expected order of categories (unique values per feature), defaults to 'auto', where
+        categories are determined automatically from the input data
+    :type order: 'auto' or a list of array-like
+    :param handle_unknown*: Strategy for handling unknown categories, defaults to 'use_encoded_value'
+        which sets unknown categories to <unknown_value>
+    :type handle_unknown: Literal['error', 'use_encoded_value']
+    :param unknown_value: Encoded value to assign unknown categories, must be numerical if using
+        'use_encoded_value' strategy, defaults to np.nan
+    :type unknown_value: int or np.nan
+
+    :return: Transformed ordinal encoded data
+    :rtype: array-like
+
+    .. note::
+        **<handle_unknown>:** When set to ‘use_encoded_value’,
+        the encoded value of unknown categories will be set to the value given for the parameter;
+        When set to ‘error’, an error will be raised in case an unknown categorical feature is
+        present during transform.
     """
 
     def __call__(self, sample, order='auto', handle_unknown='use_encoded_value', unknown_value=np.nan):
-        """
-        :param sample: Input data of shape (n_samples, n_features) containing categorical features
-        :type sample: array-like
-        :param order: Expected order of categories (unique values per feature), defaults to 'auto', where
-            categories are determined automatically from the input data
-        :type order: 'auto' or a list of array-like
-        :param handle_unknown*: Strategy for handling unknown categories, defaults to 'use_encoded_value'
-           which sets unknown categories to <unknown_value>
-        :type handle_unknown: Literal['error', 'use_encoded_value']
-        :param unknown_value: Encoded value to assign unknown categories, must be numerical if using
-        'use_encoded_value' strategy, defaults to np.nan
-        :type unknown_value: int or np.nan
-
-        :return: Transformed ordinal encoded data
-        :rtype: array-like
-
-        .. note::
-            <handle_unknown>: When set to ‘use_encoded_value’,
-            the encoded value of unknown categories will be set to the value given for the parameter;
-            When set to ‘error’, an error will be raised in case an unknown categorical feature is
-            present during transform.
-        """
         # Adaptations
         if order != 'auto':
             if type(order) is list:
@@ -172,10 +176,28 @@ class ToOrdinal(object):
 
 class ToKBins(object):
     """
-    Discretize continuous data into intervals using sklearn.preprocessing KBinsDiscretizer with binning strategies.
+    Callable class to discretize continuous data into intervals
+    using sklearn KBinsDiscretizer with binning strategies
+
     Useful for preprocessing continuous phenotypes into categorical representations.
 
+    :param sample: Input data of shape (n_samples, n_features) containing continuous features
+    :type sample: array-like
+    :param n_bins: The number of bins for all features or each feature to produce, defaults to 2 for all
+    :type n_bins: int or array-like of shape (n_features,)
+    :param encode: Method used to encode the transformed result
+    :type encode: Literal['ordinal', 'onehot', 'onehot-dense']
+    :param strategy*: Strategy used to define the widths of the bins
+    :type strategy: Literal['quantile', 'uniform', 'kmeans']
+
+    :return: Transformed K-bins discretized data
+    :rtype: numpy.ndarray or scipy.sparse matrix
+
+    .. Note::
+        **<strategy>:** 'kmeans' strategy may produce irregular bin widths depending on data distribution.
+
     Options:
+
     Encoding method for transformed bins:
         - 'ordinal': Integer representation (0 to n_bins-1)
         - 'onehot': Sparse matrix one-hot encoding
@@ -184,34 +206,21 @@ class ToKBins(object):
         - 'quantile': Equal-frequency bins
         - 'uniform': Equal-width bins
         - 'kmeans': Clustering-based bin edges
+
     """
 
     def __call__(self, sample, n_bins=2, encode='ordinal', strategy='quantile'):
-        """
-        :param sample: Input data of shape (n_samples, n_features) containing continuous features
-        :type sample: array-like
-        :param n_bins: The number of bins for all features or each feature to produce, defaults to 2 for all
-        :type n_bins: int or array-like of shape (n_features,)
-        :param encode: Method used to encode the transformed result
-        :type encode: Literal['ordinal', 'onehot', 'onehot-dense']
-        :param strategy*: Strategy used to define the widths of the bins
-        :type strategy: Literal['quantile', 'uniform', 'kmeans']
 
-        :return: Transformed K-bins discretized data
-        :rtype: numpy.ndarray or scipy.sparse matrix
-
-        .. Note::
-            <strategy>: 'kmeans' strategy may produce irregular bin widths depending on data distribution.
-        """
         kbintrs = skprep.KBinsDiscretizer(n_bins=n_bins, encode=encode, strategy=strategy)
         return kbintrs.fit_transform(sample)
 
 
 class StandardNormalizer(object):
     """
-    Allow log-transformation (like in Seurat, first multiply with a size factor, then plus a pseudocount, then log),
-     and standardization (scaling and centering, to obtain z-score)
     (To be implemented)
+
+    Allow log-transformation (like in Seurat, first multiply with a size factor,
+    then plus a pseudocount, then log), and standardization (scaling and centering, to obtain z-score).
     """
 
     def __call__(self, center=True, scale=True, normalize=True):

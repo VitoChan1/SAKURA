@@ -722,6 +722,7 @@ class LinClassifier(nn.Module):
 
     Use single linear layer and softmax activation function to do classification.
     Useful when simple and linear structure is expected from certain latent dimension.
+
     When config is None, default structure: Input --> Linear --> LogSoftmax --> Output.
 
     :param input_dim: The dimensionality of the input data
@@ -766,6 +767,7 @@ class LinRegressor(nn.Module):
     Use simple linear regressor to predict selected expression levels or other continuous phenotypes.
     Input is entire latent space, or designated dimension(s).
     Expected to make latent space aligned along linear structure.
+
     When config is None, default structure: Input --> Linear --> Activation --> Output.
 
     :param input_dim: The dimensionality of the input data

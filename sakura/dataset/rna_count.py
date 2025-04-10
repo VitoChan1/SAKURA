@@ -78,11 +78,11 @@ class SCRNASeqCountData(Dataset):
         .. code-block::
 
             {
-                'all': {
-                    'gene_list': "*",
-                    'pre_procedure': [],
-                    'post_procedure': [{
-                    'type': "ToTensor"
+                "all": {
+                    "gene_list": "*",
+                    "pre_procedure": [],
+                    "post_procedure": [{
+                    "type": "ToTensor"
                     }]
                 }
             }
