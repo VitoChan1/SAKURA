@@ -1,3 +1,6 @@
+"""
+SAKURA extractor training controller module
+"""
 import functools
 
 import torch
@@ -12,23 +15,30 @@ from sakura.utils.gradient_reverse import NeutralizeLayerF
 from sakura.utils.gradient_reverse import ReverseLayerF
 from sakura.utils.sliced_wasserstein import SlicedWasserstein
 
-
 class ExtractorController(object):
+    """
+    Central controller class managing the complete training lifecycle of the Extractor model
+
+    This class provides the core controller for the Extractor model.
+    It handles multi-component loss calculation, dynamic weight
+    adjustment, distributed regularization, and training workflow management.
+
+    :param model: Extractor model
+    :type model: models.Extractor
+    :param config: experiment configuration dict
+    :type config: dict, optional
+    :param pheno_config: phenotype supervision configuration
+    :type pheno_config: dict, optional
+    :param signature_config: signature supervision configuration
+    :type signature_config: dict, optional
+    :param verbose: Whether to enable verbose console logging, defaults to False
+    :type verbose: bool, optional
+    """
     def __init__(self, model: Extractor,
                  config: dict = None,
                  pheno_config: dict = None,
                  signature_config: dict = None,
                  verbose=False):
-
-        """
-        Initializer of Extractor controller.
-        :param model: Extractor model
-        :param config: experiment configuration dict
-        :param pheno_config: phenotype supervision configuration
-        :param signature_config: signature supervision configuration
-        :param verbose: should verbose console output/logging
-        """
-
         self.verbose = verbose
 
         self.model = model
@@ -124,6 +134,14 @@ class ExtractorController(object):
 
 
     def setup_optimizer(self):
+        """
+        Configure optimizer with filtered parameters based on exclusion rules.
+
+        - Module selection through config['optimizer']['excludes']
+        - RMSProp optimizer initialization
+
+        :return: None
+        """
         # Filter parameter
         modules_to_optim = torch.nn.ModuleList()
         # Scan through all parameters
@@ -151,6 +169,17 @@ class ExtractorController(object):
             raise NotImplementedError
 
     def print_weight_projection(self, expected_epoch):
+        """
+        Print the projected weights for main latent, phenotype, and signature groups over the expected epochs.
+
+        This function initializes the weights based on the provided configurations and updates them dynamically
+        according to the specified rules for each epoch.
+
+        :param expected_epoch: The number of epochs to project the weights for
+        :type expected_epoch: int
+
+        :return: None
+        """
         # Initial weights
         projected_weights = dict()
         for cur_group in ['loss', 'regularization']:
@@ -237,6 +266,14 @@ class ExtractorController(object):
         print(table)
 
     def reset(self):
+        """
+        Reset the trainer's state.
+
+        Reset global tick and epoch counters, as well as weights and epoch tracking
+        for main latent, phenotype, and signature groups.
+
+        :return: None
+        """
         # Reset trainer state
         # Global tick and epoch counter
         self.cur_tick = 0
@@ -276,6 +313,11 @@ class ExtractorController(object):
                     self.signature_epoch[cur_signature][cur_group][cur_signature_loss_key] = 0
 
     def tick(self):
+        """
+        Increment the current tick counter.
+
+        :return: None
+        """
         self.cur_tick = self.cur_tick + 1
 
     def next_epoch(self,
@@ -520,6 +562,7 @@ class ExtractorController(object):
              save_raw_loss=False):
         """
         Calculate loss
+
         :param batch: batch of data to calculate loss
         :param expr_key: expression group to use as input (by default, 'all')
         :param forward_pheno: should calculate phenotype related losses
@@ -946,6 +989,20 @@ class ExtractorController(object):
         return loss
 
     def save_checkpoint(self, save_config=False, save_model_arch=False):
+        """
+        Save the current training state of the extractor.
+
+        Serialize current configurations, epoch data, loss weights, model state, and optimizer state for
+        resuming training or evaluating the model later.
+
+        :param save_config: Whether to include configuration settings in the checkpoint, defaults to False
+        :type save_config: bool, optional
+        :param save_model_arch: Whether to include the model architecture in the checkpoint, defaults to False
+        :type save_model_arch: bool, optional
+
+        :return: A dictionary containing the current state of the extractor
+        :rtype: dict
+        """
         ret_state_dict = dict()
 
         ret_state_dict['type'] = 'extractor'
@@ -982,6 +1039,18 @@ class ExtractorController(object):
         return ret_state_dict
 
     def load_checkpoint(self, state_dict: dict):
+        """
+        Restore training state of the extractor from given checkpoint.
+
+        This function loads the extractor's epochs, loss weights, model state, and optimizer state
+        from the provided state dictionary.
+
+        :param state_dict: A compatible state dictionary containing the saved state of the extractor,
+            expected from save_checkpoint()
+        :type state_dict: dict
+
+        :return: None
+        """
         if type(state_dict) is not dict:
             raise ValueError('A dict generated by Extractor controllor\'s save_checkpoint is expected.')
         if state_dict.get('type') != 'extractor':

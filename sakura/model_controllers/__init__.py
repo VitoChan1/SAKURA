@@ -1,3 +1,3 @@
 """
-Model controllers for managing model training workflows
+Model controllers for managing SAKURA training workflows
 """

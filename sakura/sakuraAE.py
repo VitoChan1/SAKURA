@@ -722,9 +722,9 @@ class sakuraAE(object):
         :type dump_latent: bool, optional
         :param latent_prefix: Prefix to be added after <log_prefix> to latent embedding filename
         :type latent_prefix: str, optional
-        :param dump_pre_encoder_output: Whether to dump output of the pre-encoder module, defaults to False
+        :param dump_pre_encoder_output: Whether to export output of the pre-encoder module, defaults to False
         :type dump_pre_encoder_output: bool, optional
-        :param dump_reconstructed_output: Whether to dump output of the reconstruction module, defaults to False
+        :param dump_reconstructed_output: Whether to export output of the reconstruction module, defaults to False
         :type dump_reconstructed_output: bool, optional
         :param reconstructed_output_naming: Set the column names of the reconstructed matrix,
             can be 'dimid' (by default) which means dimension id or 'genenames' (names of genes)

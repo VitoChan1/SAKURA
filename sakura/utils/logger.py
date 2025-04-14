@@ -18,12 +18,13 @@ class Logger(object):
     Handles multi-dimensional logging including:
 
         - Real-time loss tracking via TensorBoard
-        - Latent space visualization exports
-        - Model configuration versioning
-        - Training checkpoint management
+        - Latent space embedding exports
+        - Model configuration persistence
 
-    :param log_path: Root directory for all logging artifacts (default './logs/')
-    :param suppress_tensorboardX:
+    :param log_path: Root directory for all logging artifacts, defaults to './logs/'
+    :type log_path: str, optional
+    :param suppress_tensorboardX: Whether to disable TensorBoard integration, defaults to False
+    :type suppress_tensorboardX: bool, optional
     """
     def __init__(self, log_path='./logs/', suppress_tensorboardX=False):
 
@@ -43,6 +44,24 @@ class Logger(object):
     def log_loss(self, trainer_output: dict, tick,
                  loss_name_prefix='',
                  selected_loss_group=['loss', 'regularization']):
+        """
+        Record hierarchical loss structure to TensorBoard
+
+        :param trainer_output:
+            Nested loss structure containing:
+            - pheno_loss: Dictionary of phenotype-specific losses
+            - signature_loss: Dictionary of signature-specific losses
+            - main_latent_loss: Core latent space loss components
+        :type trainer_output:
+        :param tick: Training iteration counter for x-axis scaling
+        :type tick: int
+        :param loss_name_prefix: Namespace prefix for loss grouping, defaults to ''
+        :type loss_name_prefix: str, optional
+        :param selected_loss_group: Loss types to log from ['loss', 'regularization'], defaults to both
+        :type selected_loss_group: list, optional
+
+        :return: None
+        """
 
         # TODO: Selectively log losses
 
@@ -73,11 +92,17 @@ class Logger(object):
 
     def log_parameter(self, trainer_output: dict, tick,
                       log_prefix=''):
+        """
+        ( to be implemented )
+        """
         # TODO: log parameters on Tensorboard
         raise NotImplementedError
 
     def log_metric(self, trainer_output: dict, tick, metric_configs: dict,
                    log_prefix=''):
+        """
+        ( to be implemented )
+        """
         # TODO: log metrics (AUROC, AUPR, etc.) on Tensorboard
         for cur_metric in metric_configs:
             if cur_metric['type'] == 'AUROC':
@@ -104,15 +129,41 @@ class Logger(object):
                            path='latent.csv',
                            compression='none'):
         """
-        Dump latent code from the output of the controller.
-        :param trainer_output: (dict) a dictionary returned by the controller (using eval_all method, with dump_latent=True)
-        :param dump_main: (bool) should dump main latent space
-        :param dump_pheno: (bool) should dump phenotype latent space
-        :param selected_pheno: (list of str) a list containing phenotype ids to be dumped
-        :param dump_signature: (bool) should dump signature latent space
-        :param selected_signature: (list of str) a list containing signature ids to be dumped
-        :param path: (str) path for the CSV file storing
-        :return:
+        Export latent representations from the output of the controller to structured storage.
+
+        :param controller_output: Forward pass results containing latent components returned by the controller
+        :type controller_output: dict
+        :param dump_main: Whether to export main latent space, defaults to True
+        :type dump_main: bool, optional
+        :param dump_lat_pre: Whether to export pre-encoder latent space, defaults to False
+        :type dump_re_x: bool, optional
+        :param dump_pheno: Whether to export phenotype latent space, defaults to True
+        :type dump_pheno: bool, optional
+        :param dump_pheno_out: Whether to export output of the phenotype module, defaults to False
+        :type dump_pheno_out: bool, optional
+        :param selected_pheno: A list containing phenotype ids to be dumped
+        :type selected_pheno: list[str]
+        :param dump_signature: Whether to export signature latent space, defaults to False
+        :type dump_signature: bool, optional
+        :param dump_signature_out: Whether to export output of the signature module, defaults to False
+        :type dump_signature_out: bool, optional
+        :param selected_signature: a list containing signature ids to be dumped
+        :type selected_signature: list[str]
+        :param dump_re_x: Whether to export output of the reconstruction module, defaults to False
+        :type dump_re_x: bool, optional
+        :param re_x_col_naming: Set the column names of the reconstructed matrix,
+            can be 'dimid' (by default) which means dimension id or 'genenames' (names of genes)
+        :type re_x_col_naming: Literal['dimid', 'genenames'], optional
+        :param colnames: Column label index to assign to DataFrame
+        :type colnames: list-like
+        :param rownames: Row label index to assign to DataFrame
+        :type rownames: list-like
+        :param path: Output path for the CSV file storing, defaults to 'latent.csv'
+        :type path: str, optional
+        :param compression: compression type of CSV files, can be 'hdf', 'gzip' or 'none' (by default)
+        :type compression: Literal['none', 'gzip', 'hdf'], optional
+
+        :return: None
         """
 
         lat_all = list()
@@ -211,14 +262,29 @@ class Logger(object):
             lat_all.to_csv(path)
 
     def save_config(self, config_dict, json_path):
+        """
+        Persist pipeline configuration to JSON.
+
+        :param config_dict: Complete experiment configuration
+        :type config_dict: dict
+        :param json_path: Output path for JSON file
+        :type json_path: str
+
+        :return: None
+        """
         with open(json_path, 'w') as f:
             json.dump(config_dict, f)
 
     def save_splits(self, split_dict, pkl_path):
+        """
+        Serialize data splits to pickle format.
+
+        :param split_dict: Data partition dictionary containing all, overall_train/test, Phenotype train/test identifiers
+        :type split_dict: dict
+        :param pkl_path: Output path for pickle file
+        :type pkl_path: str
+
+        :return: None
+        """
         with open(pkl_path, 'wb') as f:
             pickle.dump(split_dict, f)
-
-    def checkpoint(self, model, trainer,
-                   path='./checkpoints/latest/'):
-        # TODO: save model state for checkpointing
-        raise NotImplementedError

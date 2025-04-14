@@ -12,9 +12,9 @@ def modulebuilder(cfg):
 
     Each dict should contain key 'type' (str): Module type identifier. Supported types:
 
-    • 'Linear': Requires 'in_dim' and 'out_dim' keys
-    • 'Dropout': Optional 'p' key (default: 0.5)
-    • 'ReLU', 'CELU', 'Softmax', 'LogSoftmax': No additional params
+        - 'Linear': Requires 'in_dim' and 'out_dim' keys
+        - 'Dropout': Optional 'p' key (default: 0.5)
+        - 'ReLU', 'CELU', 'Softmax', 'LogSoftmax': No additional params
 
     :param cfg: A list of module configuration dictionaries
     :type cfg: list[dict]
