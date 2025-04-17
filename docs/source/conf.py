@@ -6,8 +6,8 @@ project = 'SAKURA'
 copyright = '2023, Yip Lab'
 author = 'Zhenghao ZHANG, Jiamin CHEN, Haoran WU'
 
-release = '0.0.8'
-version = '0.0.8'
+release = 'v0.0.8'
+version = 'v0.0.8'
 
 # -- General configuration
 
