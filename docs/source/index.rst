@@ -10,13 +10,12 @@ knowledge inputs related to genes and genomic regions.
 
 Analysis of single-cell data
 -----------------------------
-SAKURA is composed of modules for the following types of knowledge inputs:
+SAKURA is designed to be composed of modules for the following types of knowledge inputs:
 
     - Marker genes
     - Genes about confounding factors
     - Orthologous genes
     - Invariant genes
-    - Bulk-sample measurements
     - Regulatory elements
 
 and more to explore!
