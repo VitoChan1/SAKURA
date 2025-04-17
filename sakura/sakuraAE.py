@@ -492,7 +492,7 @@ class sakuraAE(object):
         :type resume: bool, optional
         :param resume_dict: Session state dictionary used for resuming previous training
         :type resume_dict: dict[str, Any], optional
-        :param detach: Should loss be detached as specified in <detach_from> from the computation graph, defaults to False
+        :param detach: Should losses be detached as specified in <detach_from> from the computation graph, defaults to False
         :type detach: bool, optional
         :param detach_from: Starting point in the model from which the loss should be detached
         :type detach_from: str, optional

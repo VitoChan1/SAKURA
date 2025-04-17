@@ -284,12 +284,12 @@ class Extractor(torch.nn.Module):
         :type batch: torch.Tensor
         :param forward_signature: Whether to forward signature supervision part, defaults to True
         :type forward_signature: bool, optional
-        :param selected_signature: List of selected signatures to be forwarded,
+        :param selected_signature: A list of selected signatures to be forwarded,
             None to forward all signatures, optional
         :type selected_signature: list[str], optional
         :param forward_pheno: Whether to forward phenotype supervision part, defaults to True
         :type forward_pheno: bool, optional
-        :param selected_pheno: List of selected phenotypes to be forwarded,
+        :param selected_pheno: A list of selected phenotypes to be forwarded,
             None to forward all phenotypes
         :type selected_pheno: list[str], optional
         :param forward_main_latent: Whether to forward main latent part, defaults to True

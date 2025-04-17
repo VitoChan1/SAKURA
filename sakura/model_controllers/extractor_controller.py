@@ -175,7 +175,7 @@ class ExtractorController(object):
         This function initializes the weights based on the provided configurations and updates them dynamically
         according to the specified rules for each epoch.
 
-        :param expected_epoch: The number of epochs to project the weights for
+        :param expected_epoch: Number of epochs to project the weights for
         :type expected_epoch: int
 
         :return: None
@@ -270,7 +270,7 @@ class ExtractorController(object):
         Reset the trainer's state.
 
         Reset global tick and epoch counters, as well as weights and epoch tracking
-        for main latent, phenotype, and signature groups.
+        for main latent, phenotype, and signature modules.
 
         :return: None
         """
@@ -326,12 +326,19 @@ class ExtractorController(object):
                    prog_signature=True, selected_signature=None):
         """
         Handle inter epoch loss weight progressions and tick epoch counters.
-        :param prog_main:
-        :param prog_pheno:
-        :param selected_pheno:
-        :param prog_signature:
-        :param selected_signature:
-        :return:
+
+        :param prog_main: Whether to progress main latent weights, defaults to True
+        :type prog_main: bool, optional
+        :param prog_pheno: Whether to progress phenotype weights, defaults to True
+        :type prog_pheno: bool, optional
+        :param selected_pheno: Selected phenotype story id(s) to progress, defaults to None as all being selected
+        :type selected_pheno: dict or None, optional
+        :param prog_signature: Whether to progress signature weights, defaults to True
+        :type prog_signature: bool, optional
+        :param selected_signature: Selected signature story id(s) to progress, defaults to None as all being selected
+        :type selected_signature: dict or None, optional
+
+        :return: None
         """
         # Global epoch
         self.cur_epoch = self.cur_epoch + 1
@@ -452,11 +459,16 @@ class ExtractorController(object):
 
     def regularize(self, tensor, regularization_config: dict, supervision=None):
         """
-        Handle regularizations.
-        :param tensor: tensor to regularize (usually, a "batched" tensor with shape (N, ...), where N is the number of data points)
-        :param regularization_config: a dict, containing regularization configuration
-        :param supervision: an object required for supervised regularization
-        :return:
+        Handle regularization to the given tensor based on the specified configuration.
+
+        :param tensor: Tensor to regularize (usually, of shape (N_batch, ...))
+        :type tensor: torch.Tensor
+        :param regularization_config: A dict containing regularization configuration, including type and parameters specific to the chosen method
+        :type regularization_config: dict
+        :param supervision: List of label indices (0 <= index < n_labels) for batch sample supervised regularization
+        :type supervision: list[int], optional
+
+        :return: None
         """
         if regularization_config['type'] == 'SW2_uniform':
             # Uniform distribution regularization
@@ -518,6 +530,17 @@ class ExtractorController(object):
             raise NotImplementedError
 
     def select_loss_dict(self, selection=None, internal=None):
+        """
+        Select loss keys from the internal dict based on selection setting.
+
+        :param selection: The selection setting, which can be a list of keys, '*' for all keys
+        :type selection: list or '*'
+        :param internal: The internal loss configuration dictionary to select from.
+        :type internal: dict
+
+        :return: A list of selected keys based on the selection criteria.
+        :rtype: list
+        """
         if type(selection) is list:
             return selection
         elif selection == '*':
@@ -528,10 +551,11 @@ class ExtractorController(object):
     def select_item_dict(self, selection=None, internal=None, mode='keys'):
         """
         Utility method to handle selections from internal phenotype/signature configs.
+
         :param selection: selection object, could be dict, list, str, or None.
         :param internal: internal config dict to select
         :param mode: By default, 'key', will return a key list after selection
-        :return:
+        :return: dict
         """
         if mode == 'keys':
             keys_to_ret = list()
@@ -561,26 +585,54 @@ class ExtractorController(object):
              detach=False, detach_from='',
              save_raw_loss=False):
         """
-        Calculate loss
+        Calculate composite loss across all active components.
 
-        :param batch: batch of data to calculate loss
-        :param expr_key: expression group to use as input (by default, 'all')
-        :param forward_pheno: should calculate phenotype related losses
-        :param selected_pheno: phenotype selection for loss calculation, should be None (selecting all phenotypes, and
+        :param batch: A dictionary containing a batched data to calculate loss, should include:
+
+            - expr: Expression matrices
+            - pheno: Phenotype labels
+
+        :type batch: dict
+        :param expr_key: The key of expression group to use as input, defaults to 'all'
+        :type expr_key: str, optional
+        :param forward_pheno: Whether to calculate phenotype related losses, defaults to True
+        :type forward_pheno: bool, optional
+        :param selected_pheno: Phenotype selection for loss calculation, should be None (selecting all phenotypes, and
         related losses and regularizations), or a dictionary formulated as:
         {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), 'regularization': [list of regularization
         names, could be Null] or '*' or None (no regularization)}}
-        :param forward_signature: should calculate signature related losses
-        :param selected_signature: signature selection for loss calculation, should be None (selecting all signatures,
+        :type selected_pheno: dict, optional
+        :param forward_signature: Whether to calculate signature related losses, defaults to True
+        :type forward_signature: bool, optional
+        :param selected_signature: Signature selection for loss calculation, should be None (selecting all signatures,
         and related losses and regularizations), or a dictionary formulated similar to selected_pheno
-        :param forward_reconstruction: should calculate reconstruction loss (for Extractor model, when this turn on, all
-         latents will be calculated by force)
-        :param forward_main_latent: should calculate main latent
-        :param dump_forward_results: should preserve forwarded tensors in the return dict
-        :param detach: should loss be detached as specified in `detach_from`
-        :param detach_from: starting from where should loss be detached
-        :param save_raw_loss: when `True`, apart from the weighted losses, unweighted, raw losses will also be recorded
-        :return:
+        :type selected_signature: dict, optional
+        :param forward_reconstruction*: Whether to calculate main losses of decoder reconstruction, defaults to True
+        :type forward_reconstruction: bool, optional
+        :param forward_main_latent: Whether to calculate main latent regularization losses, defaults to True
+        :type forward_main_latent: bool, optional
+        :param dump_forward_results: Whether to preserve forwarded tensors in the return dict, defaults to False
+        :type dump_forward_results: bool, optional
+        :param detach: Should loss be detached from midway of the network
+            as specified in <detach_from>, defaults to False
+        :type detach: bool, optional
+        :param detach_from: Specific component from which the loss should be detached
+            if <detach> is True
+        :type detach_from: Literal['pre_encoder', 'encoder'] or str, optional
+        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, defaults to False
+        :type save_raw_loss: bool, optional
+
+        .. note::
+            **<forward_reconstruction>:** When turned on, losses of all latents will be calculated by force.
+        
+        :return:  A dictionary containing the computed losses:
+
+            - 'main_latent_loss': Main latent loss details
+            - 'pheno_loss': Phenotype loss details
+            - 'signature_loss': Signature loss details
+            - 'fwd_res'(optional): Forwarded result tensors, if <dump_forward_results> is True.
+
+        :rtype: dict
         """
         # Forward model (obtain pre-loss-calculated tensors)
         signature_select_fwd = list()
@@ -887,16 +939,42 @@ class ExtractorController(object):
               suppress_backward=False,
               detach=False, detach_from='', save_raw_loss=False):
         """
-        Train model using specified batch.
-        :param batch: batched data, obtained from rna_count dataset
-        :param backward_reconstruction_loss: should optimize/backward reconstruction loss, default True
-        :param backward_main_latent_regularization: should optimize/backward regularization of main latent space, default True
-        :param backward_pheno_loss: should optimize/backward phenotype-related loss, default True
-        :param selected_pheno: a list of selected phenotype to backward, default None; when None, all phenotypes set when initializing the Controller object will be used
-        :param backward_signature_loss: should optimize/backward signature-related loss, default True
-        :param selected_signature: a list of selected signatures to backward, default None; when None, all signatures set when initializing the Controller object will be selected
-        :param suppress_backward: should backward of sum of losses be suppressed (useful when external training agent override the control)
-        :return: A dict, containing losses used in this training tick
+        Train the model using the specified batch of data.
+
+        This function performs a training step by computing the losses associated with reconstruction,
+        main latent regularization, phenotype, and signature components. It then performs backpropagation
+        to update the model weights based on the computed total loss.
+
+        :param batch: A dictionary containing a batched data for training, typically obtained from rna_count dataset
+        :type batch: dict
+        :param backward_reconstruction_loss: Whether to optimize and backward reconstruction loss, defaults to True
+        :type backward_reconstruction_loss: bool, optional
+        :param backward_main_latent_regularization: Whether to optimize and backward regularization of main latent space, defaults to True
+        :type backward_main_latent_regularization: bool, optional
+        :param backward_pheno_loss: Whether to optimize and backward phenotype-related loss, defaults to True
+        :type backward_pheno_loss: bool, optional
+        :param selected_pheno: Phenotype selection for backpropagation optimization, should be None (selecting all phenotypes, and
+        related losses and regularizations), or a dictionary formulated as:
+        {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), 'regularization': [list of regularization
+        names, could be Null] or '*' or None (no regularization)}}
+        :type selected_pheno: dict, optional
+        :param backward_signature_loss: Whether to optimize and backward signature-related loss, defaults to True
+        :type backward_signature_loss: bool, optional
+        :param selected_signature: Signature selection for backpropagation optimization, should be None (selecting all signatures,
+        and related losses and regularizations), or a dictionary formulated similar to selected_pheno
+        :type selected_signature: dict, optional
+        :param suppress_backward: Whether to suppress backward of sum of losses (useful when external training agent override the control)
+        :type suppress_backward: bool, optional
+        :param detach: Should losses be detached as specified in <detach_from> from the computation graph, defaults to False
+        :type detach: bool, optional
+        :param detach_from: Starting point in the model from which the loss should be detached
+        :type detach_from: str, optional
+        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, defaults to False
+        :type save_raw_loss: bool, optional
+
+        :return: A dictionary containing the losses computed during this training tick,\
+            including total loss and individual component losses
+        :rtype: dict
         """
         # Switch model to train mode
         self.model.train()
@@ -961,15 +1039,37 @@ class ExtractorController(object):
              forward_signature=False, selected_signature=None,
              forward_reconstruction=False, forward_main_latent=False, dump_latent=False, save_raw_loss=False):
         """
-        Evaluate losses.
+        Evaluate the model using the specified batch of data.
+        
+        This function performs an evaluation step by computing the losses
+        associated with reconstruction, main latent regularization, phenotype, and signature components.
+        
+        :param batch: A dictionary containing a batched data for evaluation
+        :type batch: dict
+        :param forward_pheno: Whether to calculate phenotype related losses, defaults to True
+        :type forward_pheno: bool, optional
+        :param selected_pheno: Phenotype selection for loss calculation, should be None (selecting all phenotypes, and
+        related losses and regularizations), or a dictionary formulated as:
+        {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), 'regularization': [list of regularization
+        names, could be Null] or '*' or None (no regularization)}}
+        :type selected_pheno: dict, optional
+        :param forward_signature: Whether to calculate signature related losses, defaults to True
+        :type forward_signature: bool, optional
+        :param selected_signature: Signature selection for loss calculation, should be None (selecting all signatures,
+        and related losses and regularizations), or a dictionary formulated similar to selected_pheno
+        :type selected_signature: dict, optional
+        :param forward_reconstruction*: Whether to calculate main losses of decoder reconstruction, defaults to True
+        :type forward_reconstruction: bool, optional
+        :param forward_main_latent: Whether to calculate main latent regularization losses, defaults to True
+        :type forward_main_latent: bool, optional
+        :param dump_latent: Whether to preserve forwarded latents in the return dict, defaults to False
+        :type dump_latent: bool, optional
+        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, defaults to False
+        :type save_raw_loss: bool, optional
 
-        :param batch:
-        :param forward_pheno:
-        :param selected_pheno:
-        :param forward_signature:
-        :param selected_signature:
-        :param dump_latent:
-        :return:
+        :return: A dictionary containing the losses computed during this evaluation,\
+            including total loss and individual component losses
+        :rtype: dict
         """
         # Switch model to eval mode
         self.model.eval()
