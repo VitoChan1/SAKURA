@@ -597,21 +597,27 @@ class ExtractorController(object):
         :type expr_key: str, optional
         :param forward_pheno: Whether to calculate phenotype related losses, defaults to True
         :type forward_pheno: bool, optional
-        :param selected_pheno: Phenotype selection for loss calculation, should be None (selecting all phenotypes, and
-        related losses and regularizations), or a dictionary formulated as:
-        {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), 'regularization': [list of regularization
-        names, could be Null] or '*' or None (no regularization)}}
+        :param selected_pheno: Phenotype selection for loss calculation, should be None \
+            (selecting all phenotypes, and related losses and regularizations), \
+            or a dictionary formulated as:
+
+            {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), \
+            'regularization': [list of regularization keys, could be Null] or '*' or None (no regularization)}}
         :type selected_pheno: dict, optional
         :param forward_signature: Whether to calculate signature related losses, defaults to True
         :type forward_signature: bool, optional
-        :param selected_signature: Signature selection for loss calculation, should be None (selecting all signatures,
-        and related losses and regularizations), or a dictionary formulated similar to selected_pheno
+        :param selected_signature: Signature selection for loss calculation, should be None
+            (selecting all signatures, and related losses and regularizations), \
+            or a dictionary formulated similar to selected_pheno
         :type selected_signature: dict, optional
-        :param forward_reconstruction*: Whether to calculate main losses of decoder reconstruction, defaults to True
+        :param forward_reconstruction*: Whether to calculate main losses of decoder reconstruction, \
+            defaults to True
         :type forward_reconstruction: bool, optional
-        :param forward_main_latent: Whether to calculate main latent regularization losses, defaults to True
+        :param forward_main_latent: Whether to calculate main latent regularization losses, \
+            defaults to True
         :type forward_main_latent: bool, optional
-        :param dump_forward_results: Whether to preserve forwarded tensors in the return dict, defaults to False
+        :param dump_forward_results: Whether to preserve forwarded tensors in the return dict, \
+            defaults to False
         :type dump_forward_results: bool, optional
         :param detach: Should loss be detached from midway of the network
             as specified in <detach_from>, defaults to False
@@ -619,7 +625,8 @@ class ExtractorController(object):
         :param detach_from: Specific component from which the loss should be detached
             if <detach> is True
         :type detach_from: Literal['pre_encoder', 'encoder'] or str, optional
-        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, defaults to False
+        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, \
+            defaults to False
         :type save_raw_loss: bool, optional
 
         .. note::
@@ -939,7 +946,7 @@ class ExtractorController(object):
               suppress_backward=False,
               detach=False, detach_from='', save_raw_loss=False):
         """
-        Train the model using the specified batch of data.
+        Train the model using the spectrain(ified batch of data.
 
         This function performs a training step by computing the losses associated with reconstruction,
         main latent regularization, phenotype, and signature components. It then performs backpropagation
@@ -949,30 +956,36 @@ class ExtractorController(object):
         :type batch: dict
         :param backward_reconstruction_loss: Whether to optimize and backward reconstruction loss, defaults to True
         :type backward_reconstruction_loss: bool, optional
-        :param backward_main_latent_regularization: Whether to optimize and backward regularization of main latent space, defaults to True
+        :param backward_main_latent_regularization: Whether to optimize and backward regularization of \
+            main latent space, defaults to True
         :type backward_main_latent_regularization: bool, optional
         :param backward_pheno_loss: Whether to optimize and backward phenotype-related loss, defaults to True
         :type backward_pheno_loss: bool, optional
-        :param selected_pheno: Phenotype selection for backpropagation optimization, should be None (selecting all phenotypes, and
-        related losses and regularizations), or a dictionary formulated as:
-        {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), 'regularization': [list of regularization
-        names, could be Null] or '*' or None (no regularization)}}
+        :param selected_pheno: Phenotype selection for backpropagation optimization, should be None
+            (selecting all phenotypes, and related losses and regularizations), or a dictionary formulated as:\
+
+            {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), \
+            'regularization': [list of regularization keys, could be Null] or '*' or None (no regularization)}}
         :type selected_pheno: dict, optional
         :param backward_signature_loss: Whether to optimize and backward signature-related loss, defaults to True
         :type backward_signature_loss: bool, optional
-        :param selected_signature: Signature selection for backpropagation optimization, should be None (selecting all signatures,
-        and related losses and regularizations), or a dictionary formulated similar to selected_pheno
+        :param selected_signature: Signature selection for backpropagation optimization, \
+            should be None (selecting all signatures, and related losses and regularizations), \
+            or a dictionary formulated similar to selected_pheno
         :type selected_signature: dict, optional
-        :param suppress_backward: Whether to suppress backward of sum of losses (useful when external training agent override the control)
+        :param suppress_backward: Whether to suppress backward of sum of losses \
+            (useful when external training agent override the control)
         :type suppress_backward: bool, optional
-        :param detach: Should losses be detached as specified in <detach_from> from the computation graph, defaults to False
+        :param detach: Should losses be detached as specified in <detach_from> from the computation graph, \
+            defaults to False
         :type detach: bool, optional
         :param detach_from: Starting point in the model from which the loss should be detached
         :type detach_from: str, optional
-        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, defaults to False
+        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, \
+            defaults to False
         :type save_raw_loss: bool, optional
 
-        :return: A dictionary containing the losses computed during this training tick,\
+        :return: A dictionary containing the losses computed during this training tick, \
             including total loss and individual component losses
         :rtype: dict
         """
@@ -1048,15 +1061,17 @@ class ExtractorController(object):
         :type batch: dict
         :param forward_pheno: Whether to calculate phenotype related losses, defaults to True
         :type forward_pheno: bool, optional
-        :param selected_pheno: Phenotype selection for loss calculation, should be None (selecting all phenotypes, and
-        related losses and regularizations), or a dictionary formulated as:
-        {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), 'regularization': [list of regularization
-        names, could be Null] or '*' or None (no regularization)}}
+        :param selected_pheno: Phenotype selection for loss calculation, should be None \
+            (selecting all phenotypes, and related losses and regularizations), or a dictionary formulated as: \
+
+            {'pheno_name': {'loss': [list of loss names] or '*' (selecting all), \
+            'regularization': [list of regularization keys, could be Null] or '*' or None (no regularization)}}
         :type selected_pheno: dict, optional
         :param forward_signature: Whether to calculate signature related losses, defaults to True
         :type forward_signature: bool, optional
-        :param selected_signature: Signature selection for loss calculation, should be None (selecting all signatures,
-        and related losses and regularizations), or a dictionary formulated similar to selected_pheno
+        :param selected_signature: Signature selection for loss calculation, should be None
+            (selecting all signatures, and related losses and regularizations), \
+            or a dictionary formulated similar to selected_pheno
         :type selected_signature: dict, optional
         :param forward_reconstruction*: Whether to calculate main losses of decoder reconstruction, defaults to True
         :type forward_reconstruction: bool, optional
@@ -1064,10 +1079,11 @@ class ExtractorController(object):
         :type forward_main_latent: bool, optional
         :param dump_latent: Whether to preserve forwarded latents in the return dict, defaults to False
         :type dump_latent: bool, optional
-        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, defaults to False
+        :param save_raw_loss: Whether to record unweighted, raw losses apart from the weighted losses, \
+            defaults to False
         :type save_raw_loss: bool, optional
 
-        :return: A dictionary containing the losses computed during this evaluation,\
+        :return: A dictionary containing the losses computed during this evaluation, \
             including total loss and individual component losses
         :rtype: dict
         """
