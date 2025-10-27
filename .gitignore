@@ -82,3 +82,7 @@ dmypy.json
 .pyre/
 .pytype/
 cython_debug/
+
+#local directory to ignore
+./data/
+./rebuttal/
