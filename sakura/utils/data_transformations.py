@@ -56,7 +56,7 @@ class ToTensor(object):
                 raise NotImplementedError
         elif input_type == 'pheno':
             if type(sample) is pd.core.frame.DataFrame:
-                ret = torch.from_numpy(sample.astype(np.float).values)
+                ret = torch.from_numpy(sample.astype(float).values)
             elif type(sample) is np.ndarray:
                 ret = torch.from_numpy(sample)
             else:
