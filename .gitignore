@@ -83,6 +83,7 @@ dmypy.json
 .pytype/
 cython_debug/
 
-#local directory to ignore
+#local directory/file to ignore
 ./data/
 ./rebuttal/
+.DS_Store
