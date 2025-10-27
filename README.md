@@ -21,7 +21,7 @@ It focuses on the task of producing an embedding (i.e., a low-dimensional repres
 In the [user guide](https://), we provide an overview of each model.
 All model implementations have a high-level API that interacts with
 [scanpy](http://scanpy.readthedocs.io/) and includes standard save/load functions, GPU acceleration, etc.
--->
+--> 
 
 ## Getting Started  
 

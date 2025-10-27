@@ -14,6 +14,7 @@ from sakura.models.extractor import Extractor
 from sakura.utils.gradient_reverse import NeutralizeLayerF
 from sakura.utils.gradient_reverse import ReverseLayerF
 from sakura.utils.sliced_wasserstein import SlicedWasserstein
+from sakura.utils.kl_divergence import KLDivergence
 
 class ExtractorController(object):
     """
@@ -47,6 +48,7 @@ class ExtractorController(object):
 
         # SW2 regularizer and defaults
         self.SW2 = SlicedWasserstein()
+        self.KL = KLDivergence()
         self.main_latent_config = self.config['main_latent']
 
         # Line main latent config
@@ -468,7 +470,7 @@ class ExtractorController(object):
         :param supervision: List of label indices (0 <= index < n_labels) for batch sample supervised regularization
         :type supervision: list[int], optional
 
-        :return: None
+        :return: Distance between encoded samples and samples randomly drawn from distribution function.
         """
         if regularization_config['type'] == 'SW2_uniform':
             # Uniform distribution regularization
@@ -528,6 +530,17 @@ class ExtractorController(object):
         elif regularization_config['type'] == 'euclidean_anchor':
             # TODO: Euclidean anchoring
             raise NotImplementedError
+        elif regularization_config['type'] == 'KL_gaussian_mixture':
+            return self.KL(
+                encoded_samples=tensor,
+                distribution_fn=functools.partial(distributions.gaussian_mixture,
+                                                  n_labels=regularization_config['gaussian_mixture_n_labels'],
+                                                  x_var=regularization_config.get('gaussian_mixture_x_var'),
+                                                  y_var=regularization_config.get('gaussian_mixture_y_var'),
+                                                  label_indices=supervision),
+                device=self.device
+            )
+
 
     def select_loss_dict(self, selection=None, internal=None):
         """
