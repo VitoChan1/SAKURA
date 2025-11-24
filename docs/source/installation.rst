@@ -17,11 +17,11 @@ We assume conda is installed. Run the following command to create a new environm
 
 Activate the environment:
 
-.. code-block:: console
+    .. code-block:: console
 
-    conda activate sakura
+        conda activate sakura
 
-.. _installation:
+    .. _installation:
 
 Install SAKURA via cloning
 -------------------------------

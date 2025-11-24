@@ -1,0 +1,55 @@
+{
+  "cd8": {
+    "remarks": "major CD8 T cells marker(s)",
+    "signature_list": [
+      "CD8A",
+      "CD8B"
+    ],
+    "exclude_from_input": "False",
+    "signature_lat_dim": 50,
+    "signature_out_dim": 2,
+    "pre_procedure": [],
+    "post_procedure": [
+      {
+        "type": "ToTensor"
+      }
+    ],
+    "split": {
+      "type": "none"
+    },
+    "loss": {
+      "regression_MSE": {
+        "type": "MSE",
+        "progressive_mode": "increment",
+        "progressive_const": 0.01,
+        "progressive_start_epoch": 50,
+        "init_weight": 0.0,
+        "max_weight": 1.0
+      },
+      "regression_L1": {
+        "type": "L1",
+        "progressive_mode": "increment",
+        "progressive_const": 0.01,
+        "progressive_start_epoch": 50,
+        "init_weight": 0.0,
+        "max_weight": 1.0
+      },
+      "regression_cosine": {
+        "type": "Cosine",
+        "progressive_mode": "increment",
+        "progressive_const": 0.01,
+        "progressive_start_epoch": 50,
+        "init_weight": 0.0,
+        "max_weight": 1.0
+      }
+    },
+    "model": {
+      "type": "FCRegressor",
+      "hidden_neurons": 5,
+      "attach": "True",
+      "attach_to": "main_lat"
+    },
+    "regularization": {
+    }
+  }
+}

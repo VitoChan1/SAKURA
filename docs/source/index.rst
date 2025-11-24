@@ -25,7 +25,9 @@ and more to explore!
 Contents
 --------
 .. toctree::
+    :maxdepth: 2
 
     installation
+    tutorials/tutorial_index
     api
     release

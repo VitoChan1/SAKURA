@@ -1,0 +1,132 @@
+{
+  "remarks": "",
+  "log_path": "./documentation/VT_PBMC_CD4CD8_0.01_1/log/",
+  "reproducible": "True",
+  "rnd_seed": 3407,
+  "dataset": {
+    "type": "rna_count_sparse",
+    "gene_expr_MM_path": "./data/docuPBMC/lognorm_hv10k.mtx",
+    "gene_name_csv_path": "./data/docuPBMC/genenames_hv10k.csv",
+    "cell_name_csv_path": "./data/docuPBMC/cell_names.csv",
+    "pheno_csv_path": "./data/docuPBMC/pheno_df.csv",
+    "pheno_df_dtype": {
+      "Batch": "string",
+      "Main_cluster_name": "string"
+    },
+    "pheno_df_na_filter": "False",
+    "expr_mat_pre_slice": "False",
+    "signature_config_path": "./documentation/VT_PBMC_CD4CD8_0.01_1/signature_config.json",
+    "selected_signature": [
+      "cd8"
+    ]
+  },
+  "device": "cpu",
+  "overall_train_test_split": {
+    "type": "auto",
+    "train_dec": 5,
+    "seed": 3407
+  },
+  "main_latent": {
+    "encoder_neurons": 200,
+    "decoder_neurons": 200,
+    "latent_dim": 50,
+    "loss": {
+      "L2": {
+        "type": "MSE",
+        "init_weight": 1.0,
+        "progressive_const": 1.0,
+        "progressive_start_epoch": 100
+      },
+      "L1": {
+        "type": "L1",
+        "init_weight": 1.0,
+        "progressive_const": 1.0,
+        "progressive_start_epoch": 100
+      }
+    },
+    "regularization": {
+      "uniform_shape_unsupervised": {
+        "type": "SW2_uniform",
+        "init_weight": 0.0001,
+        "progressive_const": 1.01,
+        "progressive_start_epoch": 1,
+        "max_weight": 1.0,
+        "SW2_num_projections": 50,
+        "uniform_low": -10,
+        "uniform_high": 10
+      }
+    }
+  },
+  "optimizer": {
+    "type": "RMSProp",
+    "RMSProp_lr": 0.001,
+    "RMSProp_alpha": 0.9
+  },
+  "dump_configs": "True",
+  "dump_splits": "True",
+  "preslice_tests": "True",
+  "persist_test_set": "True",
+  "story": [
+    {
+      "action": "train_hybrid",
+      "ticks": 5000,
+      "hybrid_mode": "interleave",
+      "split_configs": {
+        "main_lat_reconstruct": {
+          "use_split": "overall_train",
+          "batch_size": 100,
+          "train_main_latent": "True",
+          "train_pheno": "False",
+          "train_signature": "False"
+        },
+        "cd8_focused": {
+          "use_split": "overall_train",
+          "batch_size": 100,
+          "train_main_latent": "False",
+          "train_pheno": "False",
+          "train_signature": "True",
+          "selected_signature": {
+            "cd4cd8": {
+              "loss": "*",
+              "regularization": "*"
+            }
+          }
+        }
+      },
+      "prog_loss_weight_mode": "epoch_end",
+      "make_logs": "True",
+      "log_prefix": "hybrid",
+      "save_raw_loss": "True",
+        "log_loss_groups": ["loss", "regularization", "loss_raw", "regularization_raw"],
+      "perform_checkpoint": "True",
+      "checkpoint_on_segment": "True",
+      "checkpoint_segment": 500,
+      "checkpoint_prefix": "checkpoint_",
+      "checkpoint_save_arch": "True",
+      "checkpoint_every_epoch": "False",
+      "perform_test": "True",
+      "test_segment": 500,
+      "tests": [
+        {
+            "on_split": "all",
+            "make_logs": "False",
+            "dump_latent": "True",
+            "latent_prefix": "all_cell_all_latent"
+        },
+        {
+            "on_split": "overall_test",
+            "make_logs": "True",
+            "log_prefix": "overall_test",
+            "dump_latent": "True",
+            "latent_prefix": "overall_test_all_latent"
+        },
+        {
+            "on_split": "overall_train",
+            "make_logs": "False",
+            "dump_latent": "True",
+            "latent_prefix": "overall_train_all_latent"
+        }
+      ]
+    }
+  ]
+}
