@@ -4,11 +4,11 @@ Implementing SAKURA
 In this tutorial, we go through the basic steps for implementing SAKURA, using a dataset of ~5k
 Peripheral Blood Mononuclear Cells (PBMC) freely available from 10XGenomics_ with marker genes
 `CD8A` and `CD8B` as the knowledge input to guide dimensionality reduction.
-The processed data can be found here_.
+The processed data can be found here_ in the documentation repository.
 
 .. _10XGenomics: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
 
-.. _here: https://www.10xgenomics.com/datasets/5k_Human_Donor1_PBMC_3p_gem-x
+.. _here: https://github.com/VitoChan1/SAKURA/tree/main/tests/pbmc5k/processed
 
 Inputs of SAKURA
 ---------------------
