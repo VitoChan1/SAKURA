@@ -23,7 +23,7 @@ The documentation and tutorial source can be found in the `docs` folder of this 
 
 ## Related Data
 
-The related raw and processed data used in the tutorials can be found in the `test` folder of this repository.
+The related raw and processed data used in the tutorials can be found in the `tests` folder of this repository.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
