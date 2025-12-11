@@ -1,7 +1,12 @@
 Release notes
 =============
 
-2025-04-10 v0.0.11
+2025-12-08 v0.0.12
+-----------------
+*   **Documentation**
+    *   Added strategies for SAKURA incorporating batch effect correction.
+
+2025-11-20 v0.0.11
 -----------------
 *   **Documentation**
     *   First tutorial implementing SAKURA added.

@@ -1,5 +1,5 @@
-Batch Effect Handling in SAKURA
-===============================
+Addressing Batch Correction with SAKURA
+=======================================
 
 Batch effects are technical variations that occur between different experimental batches,
 which can confound biological signals in single-cell RNA sequencing data.
