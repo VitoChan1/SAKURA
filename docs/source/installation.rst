@@ -17,21 +17,28 @@ We assume conda is installed. Run the following command to create a new environm
 
 Activate the environment:
 
-    .. code-block:: console
+.. code-block:: console
 
-        conda activate sakura
+    conda activate sakura
 
-    .. _installation:
+.. _installation:
 
 Install SAKURA via cloning
 -------------------------------
-Clone the repository to your local directory. Then,
+Clone the repository to your local directory:
+
+.. code-block:: console
+
+    git clone https://github.com/Yip-Lab/SAKURA.git
+    cd SAKURA
+
+Then, install the `sakura` package via pip:
 
 .. code-block:: console
 
     (sakura) user:~/.../SAKURA/$
     pip install .
 
-The project dependencies are already included and wrapped by Projen; installation may take a few moments.
+The project dependencies (managed by Poetry) are already included and wrapped by Projen; installation may take a few moments.
 
 **Now you are all set.** Proceed to learn how to use the sakura package.
